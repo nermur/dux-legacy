@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Using CRLF will break shellcheck's ability to read .sh files
+*.sh    eol=lf

@@ -1,0 +1,38 @@
+:experimental:
+ifdef::env-github[]
+:icons:
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:imagesdir: imgs/
+
+== Connectivity
+Ensure internet connection is established. +
+`$ ping archlinux.org`
+
+NOTE: No connection? +
+Run `# rfkill unblock all`, then link:https://wiki.archlinux.org/title/Iwd#Connect_to_a_network[use WiFi via 'iwctl'] or link:https://wiki.archlinux.org/title/Mmcli[mobile modem via 'mmcli']. +
+
+TIP: Quickest way to connect with iwctl (iwd): +
+`# iwctl` -> `station wlan0 connect your_wifi_SSID` +
+If "wlan0" isn't the correct interface, use `station list` to see your wireless interface(s).
+
+___
+. `# pacman -Sy git`
+. `# git clone https://github.com/nermur/dux`
+
+WARNING: If you're installing Dux to a pre-existing Arch Linux installation, then don't run this, otherwise it is required to run it. +
+`# bash ~/dux/scripts/00-format_disk.sh`
+
+* After the previous steps are complete, configure then install Dux:
+. Open `~/dux/configs/settings.sh` in your editor of choice, likely `vim` or `nano`
+
+NOTE: Don't remove options in Dux's configs, just disable them.
+
+. After done configuring, run: `# bash ~/dux/scripts/dux_installer.sh`
+
+___
+=> link:0.3_booted.adoc[0.3_booted.adoc]
