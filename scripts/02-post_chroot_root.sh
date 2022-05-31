@@ -17,9 +17,9 @@ MARCH=$(gcc -march=native -Q --help=target | grep -oP '(?<=-march=).*' -m1 | awk
 NPROC=$(nproc)
 
 if [[ ${disk_encryption} -eq 1 ]]; then
-	ROOT_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+	ROOT_PARTUUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 else
-	ROOT_UUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+	ROOT_PARTUUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 fi
 
 [[ -z ${BOOT_PART:-} ]] &&
@@ -79,8 +79,6 @@ EOF
 	# Ensure these directories exist.
 	mv -f "/home/${WHICH_USER}/dux" "/home/${WHICH_USER}/dux_backup_${DATE}" >&/dev/null || :
 	cp -f -R "${GIT_DIR}" "/home/${WHICH_USER}/dux"
-
-	BACKUPS="/home/${WHICH_USER}/dux_backups"
 
 	mkdir "${mkdir_flags}" {/etc/{modules-load.d,modprobe.d,pacman.d/hooks,X11,fonts,systemd/user,snapper/configs,conf.d},/boot,/home/"${WHICH_USER}"/.config/{fontconfig/conf.d,systemd/user},/usr/share/libalpm/scripts}
 }
@@ -218,9 +216,9 @@ _systemctl enable ${SERVICES}
 	MITIGATIONS_OFF="mitigations=off"
 
 if [[ ${disk_encryption} -eq 1 ]]; then
-	REQUIRED_PARAMS="rd.luks.name=${ROOT_UUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
+	REQUIRED_PARAMS="rd.luks.name=${ROOT_PARTUUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
 else
-	REQUIRED_PARAMS="root=/dev/disk/by-uuid/${ROOT_UUID} rootflags=subvol=@root rw"
+	REQUIRED_PARAMS="root=/dev/disk/by-partuuid/${ROOT_PARTUUID} rootflags=subvol=@root rw"
 fi
 
 # https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf

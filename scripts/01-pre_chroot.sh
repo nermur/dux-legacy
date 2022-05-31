@@ -24,11 +24,11 @@ fi
 BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
 
 if [[ ${disk_encryption} -eq 1 ]]; then
-	ROOT_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+	ROOT_PARTUUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 else
-	ROOT_UUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+	ROOT_PARTUUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f3 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 fi
-LOCATION="/dev/disk/by-uuid/${ROOT_UUID}"
+LOCATION="/dev/disk/by-partuuid/${ROOT_PARTUUID}"
 SUBVOL_LIST=(root btrfs srv snapshots pkg log home)
 
 _make_dirs() {
