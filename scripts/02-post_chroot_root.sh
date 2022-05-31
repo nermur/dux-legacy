@@ -144,6 +144,9 @@ strace usbutils linux-firmware gnome-keyring avahi nss-mdns \
 man-db man-pages pacman-contrib snapper snap-pac mkinitcpio linux-zen linux-zen-headers bat \
 wget trash-cli reflector rebuild-detector vim "
 
+[[ ! -d "/sys/firmware/efi" ]] &&
+	declare -r bootloader_type="1" && export bootloader_type
+
 [[ ${bootloader_type} -eq 1 ]] &&
 	PKGS+="grub os-prober "
 [[ ${bootloader_type} -eq 2 ]] &&
@@ -200,9 +203,6 @@ _systemctl enable ${SERVICES}
 
 [[ ${disks_lvm2} -eq 0 ]] &&
 	systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service
-
-[[ ! -d "/sys/firmware/efi" ]] &&
-	declare -r bootloader_type="1" && export bootloader_type
 
 [[ ${disable_cpu_security_mitigations} -eq 0 ]] &&
 	MITIGATIONS_OFF="mitigations=off"
