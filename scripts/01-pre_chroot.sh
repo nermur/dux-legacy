@@ -21,10 +21,14 @@ if [[ ${disk_encryption} -eq 1 ]]; then
 	fi
 fi
 
-[[ -z ${BOOT_PART:-} ]] &&
-	BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :) && export BOOT_PART
+BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
 
-LUKS_PART="/dev/mapper/lukspart"
+if [[ ${disk_encryption} -eq 1 ]]; then
+	ROOT_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+else
+	ROOT_UUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+fi
+LOCATION="/dev/disk/by-uuid/${ROOT_UUID}"
 SUBVOL_LIST=(root btrfs srv snapshots pkg log home)
 
 _make_dirs() {
@@ -34,8 +38,8 @@ _make_dirs() {
 # If the Btrfs filesystem doesn't exist on the partition containing "lukspart", create it.
 if ! lsblk -fl | grep --line-buffered "lukspart" | grep -q "btrfs"; then
 	umount -flRq /mnt || :
-	mkfs.btrfs "${LUKS_PART}"
-	mount -t btrfs "${LUKS_PART}" /mnt
+	mkfs.btrfs "${LOCATION}"
+	mount -t btrfs "${LOCATION}" /mnt
 
 	_make_dirs
 	mount -t vfat -o nodev,nosuid,noexec "${BOOT_PART}" /mnt/boot
@@ -54,17 +58,17 @@ _mount_partitions() {
 	# Why 'noatime': https://archive.is/wjH73
 	local OPTS="noatime,compress=zstd:1"
 
-	mount -t btrfs -o "${OPTS}",subvol=@root "${LUKS_PART}" /mnt &&
+	mount -t btrfs -o "${OPTS}",subvol=@root "${LOCATION}" /mnt &&
 		_make_dirs # Incase one of these directories was removed.
 
 	mount -t vfat -o nodev,nosuid,noexec "${BOOT_PART}" /mnt/boot
 
-	mount -t btrfs -o "${OPTS}",subvolid=5 "${LUKS_PART}" /mnt/btrfs
-	mount -t btrfs -o "${OPTS}",subvol=@srv "${LUKS_PART}" /mnt/srv
-	mount -t btrfs -o "${OPTS}",subvol=@snapshots "${LUKS_PART}" /mnt/.snapshots
-	mount -t btrfs -o "${OPTS}",subvol=@pkg "${LUKS_PART}" /mnt/var/cache/pacman/pkg
-	mount -t btrfs -o "${OPTS}",subvol=@log "${LUKS_PART}" /mnt/var/log
-	mount -t btrfs -o "${OPTS}",subvol=@home "${LUKS_PART}" /mnt/home
+	mount -t btrfs -o "${OPTS}",subvolid=5 "${LOCATION}" /mnt/btrfs
+	mount -t btrfs -o "${OPTS}",subvol=@srv "${LOCATION}" /mnt/srv
+	mount -t btrfs -o "${OPTS}",subvol=@snapshots "${LOCATION}" /mnt/.snapshots
+	mount -t btrfs -o "${OPTS}",subvol=@pkg "${LOCATION}" /mnt/var/cache/pacman/pkg
+	mount -t btrfs -o "${OPTS}",subvol=@log "${LOCATION}" /mnt/var/log
+	mount -t btrfs -o "${OPTS}",subvol=@home "${LOCATION}" /mnt/home
 }
 _mount_partitions
 
