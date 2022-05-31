@@ -16,6 +16,10 @@ MARCH=$(gcc -march=native -Q --help=target | grep -oP '(?<=-march=).*' -m1 | awk
 # Caches result of 'nproc'
 NPROC=$(nproc)
 
+LUKS_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+[[ -z ${BOOT_PART:-} ]] &&
+	BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :) && export BOOT_PART
+
 if [[ ${support_hibernation} -eq 1 ]]; then
 	truncate -s 0 /swapfile
 	chattr +C /swapfile
@@ -212,7 +216,7 @@ REQUIRED_PARAMS="rd.luks.name=${LUKS_UUID}=lukspart rd.luks.options=discard root
 # https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
 # acpi_osi=Linux: tell BIOS to load their ACPI tables for Linux.
 COMMON_PARAMS="loglevel=3 sysrq_always_enabled=1 quiet add_efi_memmap acpi_osi=Linux nmi_watchdog=0 skew_tick=1 mce=ignore_ce nosoftlockup"
-LUKS_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+
 if [[ ${bootloader_type} -eq 1 ]]; then
 	_setup_grub2_bootloader() {
 		if [[ $(</sys/firmware/efi/fw_platform_size) -eq 64 ]]; then
