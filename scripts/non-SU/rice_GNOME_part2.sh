@@ -57,7 +57,7 @@ _org_gnome_desktop() {
 _org_gnome_desktop
 
 gsettings set org.gnome.shell disabled-extensions "[]"
-gsettings set org.gnome.shell enabled-extensions "['appindicatorsupport@rgcjonas.gmail.com']"
+gsettings set org.gnome.shell enabled-extensions "['appindicatorsupport@rgcjonas.gmail.com', 'gTile@vibou']"
 
 # Required for ~/.config/environment.d/gnome.conf to take effect without rebooting.
 _logout() {
