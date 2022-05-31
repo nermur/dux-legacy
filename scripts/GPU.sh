@@ -105,7 +105,8 @@ _nvidia_setup() {
 }
 
 _amd_setup() {
-	PKGS+="libva-mesa-driver mesa-vdpau "
+	PKGS+="libva-mesa-driver mesa-vdpau libva-vdpau-driver \
+	lib32-libva-mesa-driver lib32-mesa-vdpau lib32-libva-vdpau-driver "
 	_move2bkup "/etc/modprobe.d/amdgpu.conf" &&
 		cp "${cp_flags}" "${GIT_DIR}"/files/etc/modprobe.d/amdgpu.conf "/etc/modprobe.d/"
 

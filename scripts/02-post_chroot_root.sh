@@ -72,7 +72,7 @@ EOF
 	echo "%wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/custom_settings
 
 	# Ensure these directories exist.
-	mv -f "/home/${WHICH_USER}/dux" "/home/${WHICH_USER}/dux_backup_${DATE}" || :
+	mv -f "/home/${WHICH_USER}/dux" "/home/${WHICH_USER}/dux_backup_${DATE}" >&/dev/null || :
 	cp -f -R "${GIT_DIR}" "/home/${WHICH_USER}/dux"
 
 	BACKUPS="/home/${WHICH_USER}/dux_backups" && export BACKUPS
@@ -133,7 +133,7 @@ _hardware
 _move2bkup "/etc/X11/Xwrapper.config" &&
 	cp "${cp_flags}" "${GIT_DIR}"/files/etc/X11/Xwrapper.config "/etc/X11/"
 
-if ! grep -q 'PRUNENAMES = ".snapshots"' /etc/updatedb.conf; then
+if ! grep -q 'PRUNENAMES = ".snapshots"' /etc/updatedb.conf >&/dev/null; then
 	# Tells mlocate to ignore Snapper's Btrfs snapshots; avoids slowdowns and excessive memory usage.
 	printf 'PRUNENAMES = ".snapshots"' >>/etc/updatedb.conf
 fi
