@@ -199,7 +199,9 @@ ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook
 ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
 
 # Default services, regardless of options selected.
-SERVICES+="fstrim.timer reflector.timer irqbalance.service systemd-oomd.service dbus-broker.service systemd-timesyncd.service power-profiles-daemon.service thermald.service systemd-resolved.service rfkill-unblock@all avahi-daemon.service "
+SERVICES+="fstrim.timer reflector.timer btrfs-scrub@-.timer \
+irqbalance.service dbus-broker.service power-profiles-daemon.service thermald.service rfkill-unblock@all avahi-daemon.service \
+systemd-oomd.service systemd-timesyncd.service systemd-resolved.service "
 
 # shellcheck disable=SC2086
 _systemctl enable ${SERVICES}

@@ -78,6 +78,7 @@ https://github.com/systemd/systemd/issues/9725#issuecomment-564872011
 ** Compress data in real-time without any noticeable performance impact, reducing write amplification (increases longevity of disks by lowering disk usage), and increasing read speeds on slow disks.
 ** Have high-performance and deduplicated "snapshots" (backups) of key areas, which turns Arch Linux updates breaking software into a small nuisance, as it's very quick and easy to restore to a previous snapshot.
 ** Allow for an easier data recovery if a disk gets damaged and/or starts to have bad sectors.
+** To once a month automatically check (Scrub) over all filesystem data and metadata and verifying the checksums, repairing damage if present and possible.
 
 * `GPT`
 ** Compared to MBR, GPT supports disks above 2TB capacity, 128 primary partitions instead of 4, and protects against boot record corruption.
