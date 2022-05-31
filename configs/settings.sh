@@ -30,6 +30,9 @@ hardware_printers_and_scanners="1"
 # WIP, but for now: https://wiki.archlinux.org/title/Fprint#Configuration
 hardware_fingerprint_reader="0"
 
+# LUKS2 disk encryption.
+disk_encryption="1"
+
 # LVM2 not used to reduce potential breakage, also reduces boot times; LVM2 could have been used to allow resizing the /boot partition.
 disks_lvm2="0"
 

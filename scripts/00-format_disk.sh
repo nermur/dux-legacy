@@ -3,13 +3,17 @@
 set +H
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
+source "${GIT_DIR}/configs/settings.sh"
+
 [[ ${DEBUG} -eq 1 ]] &&
     set -x
 
 umount -flRq /mnt || :
 cryptsetup close lukspart >&/dev/null || :
 
-lsblk -o PATH,MODEL,FSTYPE,FSVER,SIZE,FSUSE%,FSAVAIL
+lsblk -o PATH,MODEL,PARTLABEL,FSTYPE,FSVER,SIZE,FSUSE%,FSAVAIL,MOUNTPOINTS
 
 _select_disk() {
     read -rep $'\nDisk examples: /dev/sda or /dev/nvme0n1; don\'t use partition numbers like: /dev/sda1 or /dev/nvme0n1p1.\nInput your desired disk, then press ENTER: ' -i "/dev/" DISK
@@ -50,7 +54,7 @@ sgdisk -a 2048 -o "${DISK}"            # Create GPT disk 2048 alignment
 # Create partitions
 sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BOOTMBR' "${DISK}"    # Partition 1 (MBR "BIOS" boot)
 sgdisk -n 2::+1024M --typecode=2:ef00 --change-name=2:'BOOTEFI' "${DISK}" # Partition 2 (UEFI boot)
-sgdisk -n 3::-0 --typecode=3:8300 --change-name=3:'DUX' "${DISK}"         # Partition 3 (LUKS2 encrypted root)
+sgdisk -n 3::-0 --typecode=3:8300 --change-name=3:'DUX' "${DISK}"         # Partition 3 (Root dir)
 if [[ ! -d "/sys/firmware/efi" ]]; then
     # Set partition 2 to use typecode ef02 if UEFI was not detected.
     sgdisk -A 1:set:2 "${DISK}"
@@ -76,4 +80,4 @@ _password_prompt() {
         _password_prompt
     fi
 }
-_password_prompt
+[[ ${disk_encryption} -eq 1 ]] && _password_prompt

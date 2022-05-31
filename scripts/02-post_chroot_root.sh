@@ -16,9 +16,14 @@ MARCH=$(gcc -march=native -Q --help=target | grep -oP '(?<=-march=).*' -m1 | awk
 # Caches result of 'nproc'
 NPROC=$(nproc)
 
-LUKS_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+if [[ ${disk_encryption} -eq 1 ]]; then
+	ROOT_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+else
+	ROOT_UUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+fi
+
 [[ -z ${BOOT_PART:-} ]] &&
-	BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :) && export BOOT_PART
+	BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
 
 if [[ ${support_hibernation} -eq 1 ]]; then
 	truncate -s 0 /swapfile
@@ -75,7 +80,7 @@ EOF
 	mv -f "/home/${WHICH_USER}/dux" "/home/${WHICH_USER}/dux_backup_${DATE}" >&/dev/null || :
 	cp -f -R "${GIT_DIR}" "/home/${WHICH_USER}/dux"
 
-	BACKUPS="/home/${WHICH_USER}/dux_backups" && export BACKUPS
+	BACKUPS="/home/${WHICH_USER}/dux_backups"
 
 	mkdir "${mkdir_flags}" {/etc/{modules-load.d,modprobe.d,pacman.d/hooks,X11,fonts,systemd/user,snapper/configs,conf.d},/boot,/home/"${WHICH_USER}"/.config/{fontconfig/conf.d,systemd/user},/usr/share/libalpm/scripts}
 }
@@ -111,8 +116,8 @@ _hardware() {
 		gpasswd -a "${WHICH_USER}" dialout
 	fi
 
-	[[ ${hardware_nonwacom_drawing_tablet} -eq 1 ]] &&
-		PKGS_AUR+="digimend-drivers-git-dkms uclogic-tools " && export PKGS_AUR
+	[[ ${hardware_fingerprint_reader} -eq 1 ]] &&
+		PKGS+="fprintd imagemagick "
 
 	if [[ ${hardware_printers_and_scanners} -eq 1 ]]; then
 		# Also requires nss-mdns; installed by default.
@@ -126,9 +131,6 @@ _hardware() {
 		}
 		trap _printer_config EXIT
 	fi
-
-	[[ ${hardware_fingerprint_reader} -eq 1 ]] &&
-		PKGS+="fprintd imagemagick "
 }
 _hardware
 
@@ -214,7 +216,13 @@ _systemctl enable ${SERVICES}
 
 [[ ${disable_cpu_security_mitigations} -eq 1 ]] &&
 	MITIGATIONS_OFF="mitigations=off"
-REQUIRED_PARAMS="rd.luks.name=${LUKS_UUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
+
+if [[ ${disk_encryption} -eq 1 ]]; then
+	REQUIRED_PARAMS="rd.luks.name=${ROOT_UUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
+else
+	REQUIRED_PARAMS="root=/dev/disk/by-uuid/${ROOT_UUID} rootflags=subvol=@root rw"
+fi
+
 # https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
 # acpi_osi=Linux: tell BIOS to load their ACPI tables for Linux.
 COMMON_PARAMS="loglevel=3 sysrq_always_enabled=1 quiet add_efi_memmap acpi_osi=Linux nmi_watchdog=0 skew_tick=1 mce=ignore_ce nosoftlockup"

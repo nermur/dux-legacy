@@ -89,7 +89,7 @@ https://github.com/pbatard/rufus/releases
 [%collapsible]
 ====
 . Throughly list disks and partitions; to see what disk/drive you are going to format. +
-`$ lsblk -o PATH,MODEL,FSTYPE,FSVER,SIZE,FSUSE%,FSAVAIL`
+`$ lsblk -o PATH,MODEL,PARTLABEL,FSTYPE,FSVER,SIZE,FSUSE%,FSAVAIL,MOUNTPOINTS`
 
 . Don't append numbers to the end of /dev/EXAMPLE +
 `# dd if=/path/to/archkbd:[TAB] of=/dev/EXAMPLE bs=8M oflag=direct status=progress`
