@@ -22,15 +22,6 @@ if lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ! ((1 >= nvidia_driver
     PKGS+="mkinitcpio "
 fi
 
-if [[ ${bootloader_type} -eq 1 ]]; then
-    PKGS+="grub-btrfs "
-elif [[ ${bootloader_type} -eq 2 ]]; then
-    # trbs, the developer of python-pid, uses an expired PGP key.
-    gpg --recv-keys 13FFEEE3DF809D320053C587D6E95F20305701A1
-    PKGS_AUR+="refind-btrfs "
-    _pkgs_aur_add
-fi
-
 _pkgs_add || :
 
 if lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ! ((1 >= nvidia_driver_series <= 3)) && [[ ${bootloader_type} -eq 1 ]]; then

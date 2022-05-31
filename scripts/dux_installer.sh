@@ -94,6 +94,11 @@ _desktop_environment() {
 }
 _desktop_environment
 
+_snapper() {
+	(arch-chroot /mnt "${GIT_DIR}/scripts/snapper.sh") |& tee "${GIT_DIR}/logs/snapper.log" || return
+}
+_snapper
+
 _04() {
 	(arch-chroot /mnt "${GIT_DIR}/scripts/04-finalize.sh") |& tee "${GIT_DIR}/logs/04-finalize.log" || return
 }

@@ -7,6 +7,8 @@ cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
 source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 
+clear
+
 # Install Paru, an AUR helper.
 if ! hash paru >&/dev/null; then
 	[[ -d "/home/${WHICH_USER}/paru-bin" ]] &&

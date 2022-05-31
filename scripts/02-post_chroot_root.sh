@@ -38,6 +38,8 @@ _preparation() {
 	local TZ
 	TZ=$(curl -s http://ip-api.com/line?fields=timezone)
 	systemd-firstboot --keymap="${system_keymap}" --timezone="${TZ}" --locale="en_US.UTF-8" --hostname="${system_hostname}" --setup-machine-id --force || :
+	hwclock --systohc
+
 	# Use the new locale.conf now to stop 'perl' from complaining about a broken locale.
 	unset LANG
 	source /etc/profile.d/locale.sh
