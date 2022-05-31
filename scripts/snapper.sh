@@ -19,7 +19,9 @@ fi
 
 # Snapper refuses to create a config if this directory exists.
 umount -flRq /.snapshots || : &&
-    _move2bkup {/.snapshots,/etc/snapper/configs/root} &&
+    rm -rf "/.snapshots"
+
+_move2bkup "/etc/snapper/configs/root" &&
     mkdir "${mkdir_flags}" /etc/snapper/configs
 
 if [[ ${DEBUG} -eq 1 ]]; then
