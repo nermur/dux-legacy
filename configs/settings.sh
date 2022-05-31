@@ -37,6 +37,8 @@ support_hibernation="0"
 # 1: GRUB2
 # 2: rEFInd
 bootloader_type="2"
+[[ ! -d "/sys/firmware/efi" ]] &&
+    declare -r bootloader_type="1"
 
 # A good backup incase linux-zen doesn't work right.
 # Will download around an extra 300MB.
