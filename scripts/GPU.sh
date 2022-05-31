@@ -150,6 +150,15 @@ _intel_setup() {
 # shellcheck disable=SC2249
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
+	if ((1 >= nvidia_driver_series <= 3)); then
+		rm -f /usr/share/libalpm/hooks/{60-mkinitcpio-remove.hook,90-mkinitcpio-install.hook} &&
+			pacman -S --noconfirm --ask=4 mkinitcpio
+
+		DUX_INSTALLER=0
+		REGENERATE_INITRAMFS=1
+		REGENERATE_GRUB2_CONFIG=1
+	fi
+	
 	if [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
 		case ${nvidia_driver_series} in
 		1)
@@ -193,15 +202,6 @@ case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corpora
 	PKGS+="xf86-video-qxl spice-vdagent qemu-guest-agent "
 	;;
 esac
-
-if ((1 >= nvidia_driver_series <= 3)); then
-	rm -f /usr/share/libalpm/hooks/{60-mkinitcpio-remove.hook,90-mkinitcpio-install.hook} &&
-		pacman -S --noconfirm --ask=4 mkinitcpio
-
-	DUX_INSTALLER=0
-	REGENERATE_INITRAMFS=1
-	REGENERATE_GRUB2_CONFIG=1
-fi
 
 _pkgs_add
 _pkgs_aur_add || :

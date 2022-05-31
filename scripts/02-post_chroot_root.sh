@@ -210,7 +210,7 @@ _systemctl enable ${SERVICES}
 [[ ${disks_lvm2} -eq 0 ]] &&
 	systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service
 
-[[ ${disable_cpu_security_mitigations} -eq 0 ]] &&
+[[ ${disable_cpu_security_mitigations} -eq 1 ]] &&
 	MITIGATIONS_OFF="mitigations=off"
 REQUIRED_PARAMS="rd.luks.name=${LUKS_UUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
 # https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
