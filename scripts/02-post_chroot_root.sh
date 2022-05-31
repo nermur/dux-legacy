@@ -126,6 +126,9 @@ _hardware() {
 		}
 		trap _printer_config EXIT
 	fi
+
+	[[ ${hardware_fingerprint_reader} -eq 1 ]] &&
+		PKGS+="fprintd imagemagick "
 }
 _hardware
 
@@ -146,7 +149,7 @@ PKGS+="noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-hack ttf-liberation ttf-ca
 
 # Default packages, regardless of options selected.
 PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft libnewt pigz pbzip2 \
-strace usbutils linux-firmware gnome-keyring avahi nss-mdns \
+strace usbutils linux-firmware gnome-keyring avahi nss-mdns ntfs-3g \
 man-db man-pages pacman-contrib snapper snap-pac mkinitcpio linux-zen linux-zen-headers bat \
 wget trash-cli reflector rebuild-detector vim "
 
@@ -311,7 +314,7 @@ _move2bkup "/etc/xdg/reflector/reflector.conf" &&
 	cp "${cp_flags}" "${GIT_DIR}"/files/etc/xdg/reflector/reflector.conf "/etc/xdg/reflector/"
 
 _prepare_03() {
-	chmod +x -R {/home/"${WHICH_USER}"/dux,/home/"${WHICH_USER}"/dux_backup_"${DATE}"} || :
+	chmod +x -R {/home/"${WHICH_USER}"/dux,/home/"${WHICH_USER}"/dux_backup_"${DATE}"} >&/dev/null || :
 	chown -R "${WHICH_USER}:${WHICH_USER}" "/home/${WHICH_USER}"
 }
 trap _prepare_03 EXIT

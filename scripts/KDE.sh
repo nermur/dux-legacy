@@ -11,7 +11,7 @@ SDDM_CONF="/etc/sddm.conf.d/kde_settings.conf"
 
 # That's for riced GNOME only.
 _move2bkup {/home/"${WHICH_USER}"/.zsh_dux_environmentd,/home/"${WHICH_USER}"/.config/environment.d/gnome.conf}
-sed -i '/[ -f ".zsh_dux_environmentd" ] && source .zsh_dux_environmentd/d' "/home/${WHICH_USER}/.zprofile"
+sed -i '/[ -f ".zsh_dux_environmentd" ] && source .zsh_dux_environmentd/d' "/home/${WHICH_USER}/.zprofile" >&/dev/null || :
 
 # kconfig: for kwriteconfig5
 pacman -S --noconfirm --ask=4 --asdeps kconfig plasma-meta
@@ -26,7 +26,7 @@ _setup_sddm() {
 		kwriteconfig5 --file "${SDDM_CONF}" --group "Autologin" --key "User" "${WHICH_USER}"
 	fi
 
-	systemctl disable entrance.service gdm.service lightdm.service lxdm.service xdm.service
+	systemctl disable entrance.service gdm.service lightdm.service lxdm.service xdm.service >&/dev/null || :
 	SERVICES+="sddm.service "
 }
 
@@ -56,11 +56,13 @@ _setup_sddm
 
 kwriteconfig5 --file /home/"${WHICH_USER}"/.config/ktimezonedrc --group "TimeZones" --key "LocalZone" "${system_timezone}"
 
-# Network applet won't work without this.
+# Tell NetworkManager to use iwd by default for increased WiFi reliability and speed.
+_move2bkup "/etc/NetworkManager/conf.d/wifi_backend.conf" &&
+	cp "${cp_flags}" "${GIT_DIR}/files/etc/NetworkManager/conf.d/wifi_backend.conf" "/etc/NetworkManager/conf.d/"
+# KDE Plasma's network applet won't work without this.
 SERVICES+="NetworkManager.service "
-
 # These conflict with NetworkManager.
-systemctl disable connman.service systemd-networkd.service
+systemctl disable connman.service systemd-networkd.service iwd.service >&/dev/null || :
 
 # shellcheck disable=SC2086
 _systemctl enable ${SERVICES}

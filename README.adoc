@@ -108,6 +108,8 @@ This makes these types of storage highly responsive to your inputs.
 * `nftables`
 ** https://firewalld.org/2018/07/nftables-backend
 
+* `NetworkManager` defaulting to `iwd` for its WiFi backend, for increased network stability and performance.
+
 * `dbus-broker`
 ** Replaces `dbus-daemon` for the system bus, as it's faster and more stable.
 

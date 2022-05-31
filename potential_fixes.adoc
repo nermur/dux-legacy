@@ -21,6 +21,9 @@ endif::[]
 . `$ systemd-analyze blame`
 
 == Potential solutions
+* WiFi not functional while booted into the Dux installation.
+** `# rm /etc/NetworkManager/conf.d/wifi_backend.conf` then `# systemctl restart NetworkManager.service`
+
 * System lockups
 ** Check files in `/boot/loader/entries/` for "pcie_aspm=force" and "pcie_port_pm=force", if present remove both of these kernel parameters, then reboot.
 * Stuck on black screen after boot

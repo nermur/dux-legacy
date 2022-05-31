@@ -21,7 +21,7 @@ _setup_gdm() {
 	[[ ${gdm_disable_wayland} -eq 1 ]] &&
 		sed -i '/^#WaylandEnable/s/^#//' "${GDM_CONF}"
 
-	systemctl disable entrance.service lightdm.service lxdm.service sddm.service xdm.service
+	systemctl disable entrance.service lightdm.service lxdm.service sddm.service xdm.service >&/dev/null || :
 	SERVICES+="gdm.service "
 }
 
@@ -37,7 +37,11 @@ konsole kconfig seahorse aspell aspell-en "
 _setup_gdm
 _pkgs_add
 
-SERVICES+="NetworkManager.service " &&
-	systemctl disable connman.service systemd-networkd.service
+# Tell NetworkManager to use iwd by default for increased WiFi reliability and speed.
+_move2bkup "/etc/NetworkManager/conf.d/wifi_backend.conf" &&
+	cp "${cp_flags}" "${GIT_DIR}/files/etc/NetworkManager/conf.d/wifi_backend.conf" "/etc/NetworkManager/conf.d/"
+SERVICES+="NetworkManager.service "
+systemctl disable connman.service systemd-networkd.service iwd.service >&/dev/null || :
+
 # shellcheck disable=SC2086
 _systemctl enable ${SERVICES}
