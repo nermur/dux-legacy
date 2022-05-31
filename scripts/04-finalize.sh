@@ -11,8 +11,16 @@ source "${GIT_DIR}/configs/settings.sh"
 clear
 
 # Now is the right time to generate a initramfs.
-rm -f /usr/share/libalpm/hooks/{60-mkinitcpio-remove.hook,90-mkinitcpio-install.hook}
-PKGS+="mkinitcpio "
+if ! ((1 >= nvidia_driver_series <= 3)); then
+    _move2bkup "/etc/mkinitcpio.d/linux-zen.preset" &&
+        cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.d/linux-zen.preset "/etc/mkinitcpio.d/"
+    if [[ ${include_kernel_lts} -eq 1 ]]; then
+        _move2bkup "/etc/mkinitcpio.d/linux-lts.preset" &&
+            cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.d/linux-lts.preset "/etc/mkinitcpio.d/"
+    fi
+    rm -f /usr/share/libalpm/hooks/{60-mkinitcpio-remove.hook,90-mkinitcpio-install.hook}
+    PKGS+="mkinitcpio "
+fi
 
 if [[ ${bootloader_type} -eq 1 ]]; then
     PKGS+="grub-btrfs "

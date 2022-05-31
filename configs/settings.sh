@@ -42,6 +42,11 @@ bootloader_type="2"
 # Will download around an extra 300MB.
 include_kernel_lts="1"
 
+# 0: Massive performance penalty on CPUs older than AMD Zen 2 or Intel 10th gen,
+# and caused a boot failure bug for Linux 5.18: 
+# https://bugs.archlinux.org/task/74891?project=1&pagenum=1
+disable_cpu_security_mitigations="1"
+
 #- Download server region selection
 #
 # North America (United States -> Canada): US,CA
@@ -125,6 +130,11 @@ case ${desktop_environment} in
     sddm_autologin_session_type="plasma" # plasma, plasmawayland
     ;;
 esac
+
+# 1: Disable installing drivers for NVIDIA GPUs.
+avoid_nvidia_gpus="0"
+avoid_intel_gpus="0"
+avoid_amd_gpus="0"
 
 # 1: Proprietary current
 # 2: Proprietary 470.xxx

@@ -3,6 +3,9 @@
 set +H
 set -e
 
+[[ ${DEBUG} -eq 1 ]] &&
+    set -x
+
 umount -flRq /mnt || :
 cryptsetup close lukspart >&/dev/null || :
 
@@ -39,9 +42,10 @@ else
     PARTITION3="${DISK}3"
 fi
 
-wipefs -af "${PARTITION3}"  # Assumed here to remove LUKS2 signatures
-sgdisk -Zo "${DISK}"        # Remove GPT & MBR data structures and all partitions on selected disk
-sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
+wipefs -af "${PARTITION2}" >&/dev/null
+wipefs -af "${PARTITION3}" >&/dev/null # Assumed here to remove LUKS2 signatures
+sgdisk -Zo "${DISK}"                   # Remove GPT & MBR data structures and all partitions on selected disk
+sgdisk -a 2048 -o "${DISK}"            # Create GPT disk 2048 alignment
 
 # Create partitions
 sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BOOTMBR' "${DISK}"    # Partition 1 (MBR "BIOS" boot)

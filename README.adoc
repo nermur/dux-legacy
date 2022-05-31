@@ -42,7 +42,8 @@ NOTE: Skip to link:0.1_start.adoc[0.1_start.adoc] for installation.
 
 * To be forked.
 ** Want to contribute but disagree with something in link:CONTRIBUTING.adoc[CONTRIBUTING.adoc]? No problem, Dux has been fully intended to be easy for you to make the Arch Linux installer you want.
-*** Credit (a link to Dux in the README) should be given so others can find their way back to here, but it's optional.
+*** Credit (a link to Dux in the README) should be given so others can find their way back to here, but it's optional (despite what the license says).
+**** I use the strongest open-source license due to the legal protections it grants me in my home country of the United States, it'd be foolish not to do so.
 
 == Notable features installed by Dux
 * `KDE` and `GNOME` desktop environments having an equal level of support/testing.

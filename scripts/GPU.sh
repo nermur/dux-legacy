@@ -150,37 +150,41 @@ _intel_setup() {
 # shellcheck disable=SC2249
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
-	case ${nvidia_driver_series} in
-	1)
-		_nvidia_setup
-		PKGS+="nvidia-dkms egl-wayland nvidia-utils opencl-nvidia libxnvctrl nvidia-settings \
+	if [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
+		case ${nvidia_driver_series} in
+		1)
+			_nvidia_setup
+			PKGS+="nvidia-dkms egl-wayland nvidia-utils opencl-nvidia libxnvctrl nvidia-settings \
 				lib32-nvidia-utils lib32-opencl-nvidia "
-		;;
-	2)
-		_nvidia_setup
-		PKGS+="egl-wayland "
-		PKGS_AUR+="nvidia-470xx-dkms nvidia-470xx-utils opencl-nvidia-470xx libxnvctrl-470xx nvidia-470xx-settings \
+			;;
+		2)
+			_nvidia_setup
+			PKGS+="egl-wayland "
+			PKGS_AUR+="nvidia-470xx-dkms nvidia-470xx-utils opencl-nvidia-470xx libxnvctrl-470xx nvidia-470xx-settings \
 				lib32-nvidia-470xx-utils lib32-opencl-nvidia-470xx "
-		;;
-	3) # Settings for current drivers seem to work fine for 390.xxx
-		_nvidia_setup
-		PKGS+="egl-wayland "
-		PKGS_AUR+="nvidia-390xx-dkms nvidia-390xx-utils opencl-nvidia-390xx libxnvctrl-390xx nvidia-390xx-settings \
+			;;
+		3) # Settings for current drivers seem to work fine for 390.xxx
+			_nvidia_setup
+			PKGS+="egl-wayland "
+			PKGS_AUR+="nvidia-390xx-dkms nvidia-390xx-utils opencl-nvidia-390xx libxnvctrl-390xx nvidia-390xx-settings \
 				lib32-nvidia-390xx-utils lib32-opencl-nvidia-390xx "
-		;;
-	4)
-		_nouveau_setup
-		;;
-	*)
-		printf "\nWARNING: No valid 'nvidia_driver_series' option was specified!\n"
-		;;
-	esac
+			;;
+		4)
+			_nouveau_setup
+			;;
+		*)
+			printf "\nWARNING: No valid 'nvidia_driver_series' option was specified!\n"
+			;;
+		esac
+	fi
 	;;&
 *"AMD/ATI"*)
-	_amd_setup
+	[[ ${avoid_amd_gpus} -ne 1 ]] &&
+		_amd_setup
 	;;&
 *"Intel Corporation"*)
-	_intel_setup
+	[[ ${avoid_intel_gpus} -ne 1 ]] &&
+		_intel_setup
 	;;&
 *"VMware"*)
 	PKGS+="xf86-video-vmware "
@@ -200,6 +204,12 @@ if [[ ${NOT_CHROOT} -eq 0 ]]; then
 elif [[ ${NOT_CHROOT} -eq 1 ]]; then
 	# shellcheck disable=SC2086
 	_systemctl enable --now ${SERVICES}
+fi
+
+if ((1 >= nvidia_driver_series <= 3)); then
+	DUX_INSTALLER=0
+	REGENERATE_INITRAMFS=1
+	REGENERATE_GRUB2_CONFIG=1
 fi
 
 [[ ${DUX_INSTALLER} -ne 1 ]] && [[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&

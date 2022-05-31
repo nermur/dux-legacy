@@ -189,8 +189,10 @@ _move2bkup "/etc/mkinitcpio.conf" &&
 	cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.conf "/etc/"
 
 # This'll prevent many unnecessary initramfs generations, speeding up the install process drastically.
-ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook
-ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
+if ((1 >= nvidia_driver_series <= 3)); then
+	ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook
+	ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
+fi
 
 # Default services, regardless of options selected.
 SERVICES+="fstrim.timer reflector.timer irqbalance.service systemd-oomd.service dbus-broker.service systemd-timesyncd.service power-profiles-daemon.service thermald.service systemd-resolved.service rfkill-unblock@all avahi-daemon.service "
@@ -204,6 +206,11 @@ _systemctl enable ${SERVICES}
 [[ ! -d "/sys/firmware/efi" ]] &&
 	declare -r bootloader_type="1" && export bootloader_type
 
+[[ ${disable_cpu_security_mitigations} -eq 0 ]] &&
+	MITIGATIONS_OFF="mitigations=off"
+REQUIRED_PARAMS="rd.luks.name=${LUKS_UUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
+# https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
+# acpi_osi=Linux: tell BIOS to load their ACPI tables for Linux.
 COMMON_PARAMS="loglevel=3 sysrq_always_enabled=1 quiet add_efi_memmap acpi_osi=Linux nmi_watchdog=0 skew_tick=1 mce=ignore_ce nosoftlockup"
 LUKS_UUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 if [[ ${bootloader_type} -eq 1 ]]; then
@@ -222,9 +229,7 @@ if [[ ${bootloader_type} -eq 1 ]]; then
 			-e "s/.GRUB_DISABLE_OS_PROBER/GRUB_DISABLE_OS_PROBER/" \
 			"${BOOT_CONF}" # can't allow these to be commented out
 
-		# https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
-		# acpi_osi=Linux: tell BIOS to load their ACPI tables for Linux.
-		sed -i -e "s|GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"rd.luks.name=${LUKS_UUID}=lukspart root=/dev/mapper/lukspart rootflags=subvol=@root rw\"|" \
+		sed -i -e "s|GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS}\"|" \
 			-e "s|GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"${COMMON_PARAMS}\"|" \
 			-e "s|GRUB_DISABLE_OS_PROBER=.*|GRUB_DISABLE_OS_PROBER=false|" \
 			"${BOOT_CONF}"
@@ -243,11 +248,11 @@ elif [[ ${bootloader_type} -eq 2 ]]; then
 	_refind_bootloader_config() {
 		_move2bkup "${BOOT_CONF}"
 		cat <<EOF >"${BOOT_CONF}"
-"Boot using standard options"  "rd.luks.name=${LUKS_UUID}=lukspart root=/dev/mapper/lukspart rootflags=subvol=@root rw ${COMMON_PARAMS}"
+"Boot using standard options"  "${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS} ${COMMON_PARAMS}"
 
-"Boot to single-user mode"  "single rd.luks.name=${LUKS_UUID}=lukspart root=/dev/mapper/lukspart rootflags=subvol=@root rw ${COMMON_PARAMS}"
+"Boot to single-user mode"  "single ${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS} ${COMMON_PARAMS}"
 
-"Boot with minimal options"  "rd.luks.name=${LUKS_UUID}=lukspart root=/dev/mapper/lukspart rootflags=subvol=@root rw"
+"Boot with minimal options"  "${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS}"
 EOF
 	}
 	_setup_refind_bootloader

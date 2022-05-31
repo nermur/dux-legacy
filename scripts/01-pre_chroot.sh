@@ -68,10 +68,9 @@ _mount_partitions() {
 _mount_partitions
 
 if [[ ${DEBUG} -ne 1 ]]; then
-	echo -e "\nTesting up to the 12 best mirrors for your selected countries, please wait...\n"
 	# Use likely fastest mirrors in user selected region(s), or the user's own selected country list.
 	# shellcheck disable=SC2086
-	reflector -c "${reflector_countrylist}" -p https --delay 1 --score 12 --fastest 6 --save /etc/pacman.d/mirrorlist >&/dev/null
+	reflector --verbose -c ${reflector_countrylist} -p https --delay 1 --score 12 --fastest 6 --save /etc/pacman.d/mirrorlist
 fi
 
 # Fixes an edge case stemming from Pacman suddenly exiting (due to the user pressing Ctrl + C, which sends SIGINT).
