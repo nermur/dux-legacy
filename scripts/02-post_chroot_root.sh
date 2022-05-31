@@ -189,10 +189,8 @@ _move2bkup "/etc/mkinitcpio.conf" &&
 	cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.conf "/etc/"
 
 # This'll prevent many unnecessary initramfs generations, speeding up the install process drastically.
-if ((1 >= nvidia_driver_series <= 3)); then
-	ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook
-	ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
-fi
+ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook
+ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
 
 # Default services, regardless of options selected.
 SERVICES+="fstrim.timer reflector.timer irqbalance.service systemd-oomd.service dbus-broker.service systemd-timesyncd.service power-profiles-daemon.service thermald.service systemd-resolved.service rfkill-unblock@all avahi-daemon.service "

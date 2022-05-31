@@ -194,6 +194,15 @@ case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corpora
 	;;
 esac
 
+if ((1 >= nvidia_driver_series <= 3)); then
+	rm -f /usr/share/libalpm/hooks/{60-mkinitcpio-remove.hook,90-mkinitcpio-install.hook} &&
+		pacman -S --noconfirm --ask=4 mkinitcpio
+
+	DUX_INSTALLER=0
+	REGENERATE_INITRAMFS=1
+	REGENERATE_GRUB2_CONFIG=1
+fi
+
 _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
@@ -204,12 +213,6 @@ if [[ ${NOT_CHROOT} -eq 0 ]]; then
 elif [[ ${NOT_CHROOT} -eq 1 ]]; then
 	# shellcheck disable=SC2086
 	_systemctl enable --now ${SERVICES}
-fi
-
-if ((1 >= nvidia_driver_series <= 3)); then
-	DUX_INSTALLER=0
-	REGENERATE_INITRAMFS=1
-	REGENERATE_GRUB2_CONFIG=1
 fi
 
 [[ ${DUX_INSTALLER} -ne 1 ]] && [[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
