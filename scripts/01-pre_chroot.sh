@@ -37,7 +37,7 @@ _make_dirs() {
 }
 
 # If the Btrfs filesystem doesn't exist on the partition containing "lukspart", create it.
-if ! lsblk -fl | grep --line-buffered "lukspart" | grep -q "btrfs"; then
+if ! lsblk -o FSTYPE "${ROOT_DISK}" | grep -q "btrfs"; then
 	umount -flRq /mnt || :
 	mkfs.btrfs "${LOCATION}"
 	mount -t btrfs "${LOCATION}" /mnt
