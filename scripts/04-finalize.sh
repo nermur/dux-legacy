@@ -12,7 +12,7 @@ clear
 
 NO_NVIDIA=$(lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA")
 # Now is the right time to generate a initramfs.
-if [[ ${NO_NVIDIA} -eq 0 ]] && ! ((1 >= nvidia_driver_series <= 3)); then
+if [[ ${NO_NVIDIA:-} -eq 0 ]] && ! ((1 >= nvidia_driver_series <= 3)); then
     _move2bkup "/etc/mkinitcpio.d/linux-zen.preset" &&
         cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.d/linux-zen.preset "/etc/mkinitcpio.d/"
     if [[ ${include_kernel_lts} -eq 1 ]]; then
@@ -34,7 +34,7 @@ fi
 
 _pkgs_add || :
 
-[[ ${NO_NVIDIA} -eq 0 ]] && ! ((1 >= nvidia_driver_series <= 3)) && [[ ${bootloader_type} -eq 1 ]] &&
+[[ ${NO_NVIDIA:-} -eq 0 ]] && ! ((1 >= nvidia_driver_series <= 3)) && [[ ${bootloader_type} -eq 1 ]] &&
     grub-mkconfig -o /boot/grub/grub.cfg
 
 # Without this, Dux will not function correctly if ran by a different user than the home directories' assigned user.
