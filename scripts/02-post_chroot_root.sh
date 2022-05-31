@@ -17,9 +17,9 @@ MARCH=$(gcc -march=native -Q --help=target | grep -oP '(?<=-march=).*' -m1 | awk
 NPROC=$(nproc)
 
 if [[ ${disk_encryption} -eq 1 ]]; then
-	ROOT_PARTUUID=$(blkid | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+	ROOT_DISK=$(blkid -s UUID -s TYPE | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 else
-	ROOT_PARTUUID=$(blkid | sed -n '/PARTLABEL="DUX"/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
+	ROOT_DISK=$(blkid -s PARTLABEL -s PARTUUID | sed -n '/"DUX"/p' | cut -f3 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 fi
 
 [[ -z ${BOOT_PART:-} ]] &&
@@ -216,9 +216,9 @@ _systemctl enable ${SERVICES}
 	MITIGATIONS_OFF="mitigations=off"
 
 if [[ ${disk_encryption} -eq 1 ]]; then
-	REQUIRED_PARAMS="rd.luks.name=${ROOT_PARTUUID}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
+	REQUIRED_PARAMS="rd.luks.name=${ROOT_DISK}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
 else
-	REQUIRED_PARAMS="root=/dev/disk/by-partuuid/${ROOT_PARTUUID} rootflags=subvol=@root rw"
+	REQUIRED_PARAMS="root=/dev/disk/by-partuuid/${ROOT_DISK} rootflags=subvol=@root rw"
 fi
 
 # https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
