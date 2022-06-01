@@ -31,7 +31,8 @@ ___
 . `# bash ~/dux/scripts/00-format_disk.sh`
 ** NOTE: Not needed for use on a pre-existing Dux installation.
 
-. After done configuring, run: `# bash ~/dux/scripts/dux_installer.sh`
+. `# bash ~/dux/scripts/dux_installer.sh`
+** Can optionally be ran with `DEBUG=1` (put before `bash`) for more verbose logs and troubleshooting.
 
 ___
 => link:0.3_booted.adoc[0.3_booted.adoc]
