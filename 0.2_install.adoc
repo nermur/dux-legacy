@@ -22,12 +22,14 @@ If "wlan0" isn't the correct interface, use `station list` to see your wireless 
 
 ___
 . `# pacman -Sy git`
+
 . `# git clone https://github.com/nermur/dux`
-. `# bash ~/dux/scripts/00-format_disk.sh`
-** NOTE: Not needed for use on a pre-existing Dux installation.
 
 . Open `~/dux/configs/settings.sh` in your editor of choice, likely `vim` or `nano`
 ** NOTE: Don't remove options in Dux's configs, just disable them.
+
+. `# bash ~/dux/scripts/00-format_disk.sh`
+** NOTE: Not needed for use on a pre-existing Dux installation.
 
 . After done configuring, run: `# bash ~/dux/scripts/dux_installer.sh`
 
