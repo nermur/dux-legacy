@@ -54,7 +54,7 @@ _pkgs_aur_add || :
 
 _setup_sddm
 
-kwriteconfig5 --file /home/"${WHICH_USER}"/.config/ktimezonedrc --group "TimeZones" --key "LocalZone" "${system_timezone}"
+sudo -H -u "${WHICH_USER}" kwriteconfig5 --file /home/"${WHICH_USER}"/.config/ktimezonedrc --group "TimeZones" --key "LocalZone" "${system_timezone}"
 
 # Tell NetworkManager to use iwd by default for increased WiFi reliability and speed.
 _move2bkup "/etc/NetworkManager/conf.d/wifi_backend.conf" &&

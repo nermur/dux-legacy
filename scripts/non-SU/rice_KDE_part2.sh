@@ -31,7 +31,7 @@ elif [[ ${kde_mouse_accel_flat} = false ]]; then
     kwriteconfig5 --delete --file /home/"${WHICH_USER}"/.config/kcminputrc --group "Mouse" --key "XLbInptAccelProfileFlat"
 fi
 
-if [[ ${kwin_no_titlebars} -eq 1 ]]; then
+if [[ ${kwin_disable_titlebars} -eq 1 ]]; then
     # Doesn't disable GTK's CSD.
     _no_titlebars() {
         local CONF="/home/${WHICH_USER}/.config/breezerc"
@@ -64,7 +64,5 @@ _other_customizations() {
 }
 _other_customizations
 
-_logout() {
-    loginctl kill-user "${WHICH_USER}"
-}
-trap _logout EXIT
+# Logout to apply changes now.
+loginctl kill-user "${WHICH_USER}"
