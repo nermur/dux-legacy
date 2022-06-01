@@ -23,14 +23,11 @@ If "wlan0" isn't the correct interface, use `station list` to see your wireless 
 ___
 . `# pacman -Sy git`
 . `# git clone https://github.com/nermur/dux`
+. `# bash ~/dux/scripts/00-format_disk.sh`
+** NOTE: Not needed for use on a pre-existing Dux installation.
 
-WARNING: If you're installing Dux to a pre-existing Arch Linux installation, then don't run this, otherwise it is required to run it. +
-`# bash ~/dux/scripts/00-format_disk.sh`
-
-* After the previous steps are complete, configure then install Dux:
 . Open `~/dux/configs/settings.sh` in your editor of choice, likely `vim` or `nano`
-
-NOTE: Don't remove options in Dux's configs, just disable them.
+** NOTE: Don't remove options in Dux's configs, just disable them.
 
 . After done configuring, run: `# bash ~/dux/scripts/dux_installer.sh`
 
