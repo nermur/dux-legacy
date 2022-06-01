@@ -24,7 +24,7 @@ fi
 
 _pkgs_add || :
 
-if lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ! ((1 >= nvidia_driver_series <= 3)) && [[ ${bootloader_type} -eq 1 ]]; then
+if lspci | grep -P "VGA|3D|Display" | ! grep -q "NVIDIA" && ! ((1 >= nvidia_driver_series <= 3)) && [[ ${bootloader_type} -eq 1 ]]; then
     grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
