@@ -15,6 +15,7 @@ kwriteconfig5 --group "General" --key "font" "${kde_general_font},-1,5,50,0,0,0,
 kwriteconfig5 --group "General" --key "menuFont" "${kde_menu_font},-1,5,50,0,0,0,0,0"
 kwriteconfig5 --group "General" --key "smallestReadableFont" "${kde_small_font},-1,5,50,0,0,0,0,0"
 kwriteconfig5 --group "General" --key "toolBarFont" "${kde_toolbar_font},-1,5,50,0,0,0,0,0"
+kwriteconfig5 --group "WM" --key "activeFont" "Liberation Sans,10,-1,5,75,0,0,0,0,0,Bold"
 
 kwriteconfig5 --group "Icons" --key "Theme" "Papirus-Dark"
 kwriteconfig5 --group "KDE" --key "LookAndFeelPackage" "org.kde.breezedark.desktop"
