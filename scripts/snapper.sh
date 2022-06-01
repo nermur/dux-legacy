@@ -21,8 +21,9 @@ fi
 umount -flRq /.snapshots || : &&
     rm -rf "/.snapshots"
 
-_move2bkup "/etc/snapper/configs/root" &&
-    mkdir "${mkdir_flags}" /etc/snapper/configs
+_move2bkup /etc/{snapper/configs,conf.d/snapper}
+cp "${cp_flags}" "${GIT_DIR}"/files/etc/conf.d/snapper "/etc/conf.d/"
+mkdir "${mkdir_flags}" /etc/snapper/configs
 
 if [[ ${DEBUG} -eq 1 ]]; then
     snapper --no-dbus -q delete-config || :
@@ -31,6 +32,8 @@ else
     snapper --no-dbus -q delete-config &>/dev/null || :
     snapper --no-dbus -q -c root create-config / &>/dev/null
 fi
+
+rm -f "/etc/snapper/configs/root"
 cp "${cp_flags}" "${GIT_DIR}"/files/etc/snapper/configs/root "/etc/snapper/configs/"
 
 if [[ ${bootloader_type} -eq 1 ]]; then
