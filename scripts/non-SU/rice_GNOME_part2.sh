@@ -35,6 +35,8 @@ _set_configs() {
 _set_configs
 
 PKGS_AUR+="adw-gtk3-git "
+[[ ${gnome_extension_pop_shell} -eq 1 ]] && PKGS_AUR+="gnome-shell-extension-pop-shell-git "
+[[ ${gnome_extension_no_titlebars} -eq 1 ]] && PKGS_AUR+="gnome-shell-extension-gtktitlebar-git "
 _pkgs_aur_add
 
 _org_gnome_desktop() {
@@ -50,14 +52,30 @@ _org_gnome_desktop() {
 	gsettings set "${SCHEMA}".interface gtk-theme "adw-gtk3-dark"
 	gsettings set "${SCHEMA}".interface icon-theme "Papirus-Dark"
 
+	gsettings set "${SCHEMA}".interface enable-animations "${gnome_animations}"
+
 	gsettings set "${SCHEMA}".peripherals.mouse accel-profile "${gnome_mouse_accel_profile}"
 	gsettings set "${SCHEMA}".privacy remember-app-usage "${gnome_remember_app_usage}"
 	gsettings set "${SCHEMA}".privacy remember-recent-files "${gnome_remember_recent_files}"
+
+	[[ ${gnome_disable_idle} -eq 1 ]] &&
+		gsettings set "${SCHEMA}".session idle-delay "0"
 }
 _org_gnome_desktop
 
 gsettings set org.gnome.shell disabled-extensions "[]"
-gsettings set org.gnome.shell enabled-extensions "['appindicatorsupport@rgcjonas.gmail.com', 'gTile@vibou']"
+gsettings set org.gnome.shell enabled-extensions "[]"
+
+[[ ${gnome_extension_appindicator} -eq 1 ]] &&
+	gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
+
+[[ ${gnome_extension_pop_shell} -eq 1 ]] &&
+	gnome-extensions enable pop-shell@system76.com
+
+if [[ ${gnome_extension_no_titlebars} -eq 1 ]]; then
+	gnome-extensions enable gtktitlebar@velitasali.github.io
+	dconf write /org/gnome/shell/extensions/gtktitlebar/hide-window-titlebars "'always'"
+fi
 
 # Required for ~/.config/environment.d/gnome.conf to take effect without rebooting.
 _logout() {

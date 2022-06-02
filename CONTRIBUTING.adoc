@@ -12,6 +12,7 @@ endif::[]
 === Recommended tools
 . https://github.com/koalaman/shellcheck | link:https://github.com/vscode-shellcheck/vscode-shellcheck[VS Code addon]
 . https://github.com/mvdan/sh#shfmt | link:https://github.com/foxundermoon/vs-shell-format[VS Code addon]
+. https://github.com/hangxingliu/vscode-systemd
 
 === These specific contributions won't be accepted, please make your own fork and be willing to give full support for it.
 

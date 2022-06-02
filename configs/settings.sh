@@ -30,11 +30,8 @@ hardware_printers_and_scanners="1"
 # WIP, but for now: https://wiki.archlinux.org/title/Fprint#Configuration
 hardware_fingerprint_reader="0"
 
-# LUKS2 disk encryption.
-disk_encryption="1"
-
-# LVM2 not used to reduce potential breakage, also reduces boot times; LVM2 could have been used to allow resizing the /boot partition.
-disks_lvm2="0"
+# 0: intended for 24/7 operation that can survive unexpected reboots.
+use_disk_encryption="1"
 
 # NOT FULLY TESTED YET
 support_hibernation="0"
@@ -76,8 +73,12 @@ reflector_countrylist="US,CA"
 # 2:  KDE    -> https://kde.org/plasma-desktop/
 desktop_environment="1"
 
-# === Desktop environment: GNOME ===
-# This rice won't break GNOME now and in the future; it's not recommended to run the non-riced/vanilla GNOME.
+# === Desktop Environment: GNOME ===
+# GNOME Display Manager
+gdm_auto_login="1"
+gdm_disable_wayland="0"
+
+# It's not recommended to run the non-riced/vanilla GNOME.
 allow_gnome_rice="1"
 
 if [[ ${allow_gnome_rice} -eq 1 ]]; then
@@ -92,21 +93,32 @@ if [[ ${allow_gnome_rice} -eq 1 ]]; then
     gnome_mouse_accel_profile="flat"    # flat, adaptive, default
     gnome_remember_app_usage="false"    # true, false
     gnome_remember_recent_files="false" # true, false
+    gnome_animations="false"            # true, false
+
+    # Support for tray icons.
+    gnome_extension_appindicator="1"
+    # Recommended to use alongside the no titlebars tweak.
+    gnome_extension_pop_shell="1"
+    # Prioritizes mouse & keyboard instead of mouse oriented window management, and frees up screen space.
+    gnome_extension_no_titlebars="1"
+
+    # Don't automatically turn off the screen or suspend the computer.
+    gnome_disable_idle="1"
 fi
 
-# - GNOME Display Manager -
-gdm_auto_login="1"
-gdm_disable_wayland="0"
-# === Desktop environment: GNOME ===
+# === Desktop Environment: KDE ===
+# Simple Desktop Display Manager
+sddm_autologin="1"
+sddm_autologin_session_type="plasma" # plasma, plasmawayland
 
-# === Desktop environment: KDE ===
 # A touchscreen keyboard.
 kde_install_virtual_keyboard="0"
 # For Wacom-based touchscreens and tablets.
 kde_install_wacom_configurator="0"
 # Try this only if KDE seems buggy.
 kde_use_kwinft="0"
-# Again like GNOME, extra care was taken to ensure this doesn't break anything.
+
+# Like GNOME, care was taken to ensure this doesn't break anything.
 allow_kde_rice="1"
 
 if [[ ${allow_kde_rice} -eq 1 ]]; then
@@ -118,24 +130,26 @@ if [[ ${allow_kde_rice} -eq 1 ]]; then
 
     # "false" to use the default mouse acceleration profile (Adaptive).
     kde_mouse_accel_flat="true"
+
     # hintnone, hintslight, hintmedium, hintfull
     # hintfull note: Fonts will look squished in some software; not an issue for GNOME.
-    kde_font_hinting="hintfull"
+    kde_font_hinting="hintslight"
+
     # none, rgb, bgr, vrgb (Vertical RGB), vbgr (Vertical BGR)
     kde_font_aliasing="rgb"
 
     # Disables window titlebars to prioritize mouse & keyboard instead of mouse oriented window management.
-    kwin_disable_titlebars="0"
+    kwin_disable_titlebars="1"
 
     kwin_animations="false" # true, false
 
     # Controls window drop-shadows: ShadowNone, ShadowSmall, ShadowMedium, ShadowLarge, ShadowVeryLarge
     kwin_shadow_size="ShadowNone"
 fi
-# - Simple Desktop Display Manager -
-sddm_autologin="1"
-sddm_autologin_session_type="plasma" # plasma, plasmawayland
-# === Desktop environment: KDE ===
+
+# === Graphics Card options ===
+# 1: Skip installing any and all GPU software.
+disable_gpu="0"
 
 # 1: Disable installing drivers for NVIDIA GPUs.
 avoid_nvidia_gpus="0"
@@ -175,6 +189,3 @@ amd_graphics_sysfs="1"
 # 1: GMA 4500 (2008) up to Coffee Lake's (2017) HD Graphics.
 # 2: HD Graphics series starting from Broadwell (2014) and newer.
 intel_video_accel="2"
-
-# Skip installing GPU software, which will break desktop environments.
-disable_gpu="0"

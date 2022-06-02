@@ -80,4 +80,4 @@ _password_prompt() {
         _password_prompt
     fi
 }
-[[ ${disk_encryption} -eq 1 ]] && _password_prompt
+[[ ${use_disk_encryption} -eq 1 ]] && _password_prompt

@@ -2,6 +2,22 @@
 # shellcheck disable=SC2034
 set -a
 
+# === Proprietary Software ===
+# An online music player that's very useful for quickly finding songs you like, for both the big and small artists.
+spotify="1"
+
+# An adblocker for Spotify Free users.
+spotify_adblock="1"
+
+# Official Discord client with additional safety and privacy provided by Flatpak's sandboxing.
+# However, this sandboxing prevents the following features from working out of the box: 
+# Game Activity, Unrestricted File Access, Rich Presence.
+discord="1"
+
+# Text editor and/or IDE.
+visual_studio_code="1"
+
+# === Open-Source Software ===
 # Support for virtual machines through QEMU/Libvirt/Virt-manager.
 virtual_machines="0"
 
@@ -17,22 +33,18 @@ easyeffects="0"
 # C/C++ debugging and reverse engineering: Valgrind, GDB, radere2 + ghidra (graphical interface: Cutter), pwndbg.
 cxx_toolbox="0"
 
+# The most private Chromium-based browser with a profitable business model that does not sacrifice your security and privacy.
+# https://privacytests.org/
+brave="1"
+
+# The overall best Microsoft Office replacement.
+onlyoffice="1"
+
+# A powerful front-end for YouTube. Open its settings to see why it's great.
+freetube="1"
+
 # A patchbay for Pipewire. Used to direct where audio transmits to and from.
 helvum="1"
-
-# An online music player that's very useful for quickly finding songs you like, for both the big and small artists.
-spotify="1"
-
-# An adblocker for Spotify Free users.
-spotify_adblock="1"
-
-# Official Discord client with additional safety and privacy provided by Flatpak's sandboxing.
-# However, this sandboxing prevents the following features from working out of the box: 
-# Game Activity, Unrestricted File Access, Rich Presence.
-discord="1"
-
-# Text editor and/or IDE.
-visual_studio_code="1"
 
 # Pacman GUI frontend; makes it easier to manage Arch Linux.
 octopi="1"
@@ -54,9 +66,6 @@ evince="1"
 
 # Screen recorder, livestreamer, and virtual + physical camera manager.
 obs_studio="1"
-
-# Official builds of Firefox from Mozilla; third-party builds usually have worse performance and more bugs.
-firefox="1"
 
 # EPUB, Mobipocket, Kindle, FictionBook, and Comic book viewer.
 foliate="1"

@@ -15,15 +15,13 @@ CPU_VENDOR=$(grep -m1 'vendor' /proc/cpuinfo | cut -f2 -d' ')
 MARCH=$(gcc -march=native -Q --help=target | grep -oP '(?<=-march=).*' -m1 | awk '{$1=$1};1')
 # Caches result of 'nproc'
 NPROC=$(nproc)
+BOOT_PART=$(blkid -s PARTLABEL | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
 
-if [[ ${disk_encryption} -eq 1 ]]; then
+if [[ ${use_disk_encryption} -eq 1 ]]; then
 	ROOT_DISK=$(blkid -s UUID -s TYPE | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 else
 	ROOT_DISK=$(blkid -s PARTLABEL -s PARTUUID | sed -n '/"DUX"/p' | cut -f3 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 fi
-
-[[ -z ${BOOT_PART:-} ]] &&
-	BOOT_PART=$(blkid | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
 
 if [[ ${support_hibernation} -eq 1 ]]; then
 	truncate -s 0 /swapfile
@@ -209,13 +207,12 @@ systemd-oomd.service systemd-timesyncd.service systemd-resolved.service "
 # shellcheck disable=SC2086
 _systemctl enable ${SERVICES}
 
-[[ ${disks_lvm2} -eq 0 ]] &&
-	systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service
+systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service
 
 [[ ${disable_cpu_security_mitigations} -eq 1 ]] &&
 	MITIGATIONS_OFF="mitigations=off"
 
-if [[ ${disk_encryption} -eq 1 ]]; then
+if [[ ${use_disk_encryption} -eq 1 ]]; then
 	REQUIRED_PARAMS="rd.luks.name=${ROOT_DISK}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
 else
 	REQUIRED_PARAMS="root=/dev/disk/by-partuuid/${ROOT_DISK} rootflags=subvol=@root rw"

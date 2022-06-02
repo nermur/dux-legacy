@@ -20,7 +20,7 @@ if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
 	echo -e "\nERROR: Do not run this script outside of the Arch Linux ISO!\n"
 	exit 1
 fi
-if [[ ${disk_encryption} -eq 1 ]]; then
+if [[ ${use_disk_encryption} -eq 1 ]]; then
 	if cryptsetup status "lukspart" | grep -q "inactive"; then
 		echo -e "\nERROR: Forgot to mount the LUKS2 partition as 'lukspart'?\n"
 		exit 1

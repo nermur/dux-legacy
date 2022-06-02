@@ -77,7 +77,7 @@ _nvidia_setup() {
 	_nvidia_force_max_performance() {
 		if [[ ${nvidia_force_max_performance} -eq 1 ]]; then
 			sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} DENY_SUPERUSER=1 cp ${cp_flags} ${GIT_DIR}/files/home/.config/systemd/user/nvidia-max-performance.service /home/${WHICH_USER}/.config/systemd/user/"
-			systemctl --user enable nvidia-max-performance.service
+			sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} systemctl --user enable nvidia-max-performance.service"
 
 			# Allow the "Prefer Maximum Performance" PowerMizer setting on laptops
 			local PARAMS="nvidia.NVreg_RegistryDwords=OverrideMaxPerf=0x1"

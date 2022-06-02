@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2154
 set +H
-set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
@@ -9,13 +8,15 @@ source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 source "${GIT_DIR}/configs/optional_software.sh"
 
+set +e # Don't end the script if an installer errors.
+
 mkdir "${mkdir_flags}" /home/"${WHICH_USER}"/.config/systemd/user
 chown -R "${WHICH_USER}:${WHICH_USER}" "/home/${WHICH_USER}/.config/systemd/user"
 
 chmod +x -R "${GIT_DIR}"
 
 [[ ${helvum} -eq 1 ]] &&
-PKGS+="helvum "
+	PKGS+="helvum "
 
 [[ ${virtual_machines} -eq 1 ]] &&
 	PKGS+="qemu-desktop libvirt virt-manager edk2-ovmf iptables-nft dnsmasq virglrenderer hwloc dmidecode usbutils swtpm "
@@ -80,6 +81,12 @@ fi
 [[ ${visual_studio_code} -eq 1 ]] &&
 	PKGS_AUR+="visual-studio-code-bin "
 
+[[ ${freetube} -eq 1 ]] &&
+	PKGS_AUR+="freetube-git "
+
+[[ ${onlyoffice} -eq 1 ]] &&
+	FLATPAKS+="org.onlyoffice.desktopeditors "
+
 [[ ${evince} -eq 1 ]] &&
 	PKGS+="evince "
 
@@ -89,10 +96,15 @@ if [[ ${obs_studio} -eq 1 ]]; then
 	if hash pipewire >&/dev/null; then
 		PKGS+="pipewire-v4l2 lib32-pipewire-v4l2 "
 	fi
+	# Autostart OBS to make it a sort of NVIDIA ShadowPlay or AMD ReLive.
+	sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} DENY_SUPERUSER=1 cp ${cp_flags} ${GIT_DIR}/files/home/.config/systemd/user/obs-studio.service /home/${WHICH_USER}/.config/systemd/user/"
+	sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} systemctl --user enable obs-studio.service"
 fi
 
-[[ ${firefox} -eq 1 ]] &&
-	FLATPAKS+="org.mozilla.firefox "
+if [[ ${brave} -eq 1 ]]; then
+	PKGS+="libgnome-keyring libnotify "
+	PKGS_AUR+="brave-bin "
+fi
 
 [[ ${foliate} -eq 1 ]] &&
 	PKGS+="foliate "

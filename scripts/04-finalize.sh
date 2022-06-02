@@ -11,7 +11,7 @@ source "${GIT_DIR}/configs/settings.sh"
 clear
 
 # Now is the right time to generate a initramfs.
-if lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ! ((1 >= nvidia_driver_series <= 3)); then
+if ! lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ((1 >= nvidia_driver_series <= 3)); then
     _move2bkup "/etc/mkinitcpio.d/linux-zen.preset" &&
         cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.d/linux-zen.preset "/etc/mkinitcpio.d/"
     if [[ ${include_kernel_lts} -eq 1 ]]; then
@@ -20,13 +20,12 @@ if lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ! ((1 >= nvidia_driver
     fi
     rm -f /usr/share/libalpm/hooks/{60-mkinitcpio-remove.hook,90-mkinitcpio-install.hook}
     PKGS+="mkinitcpio "
+
+    [[ ${bootloader_type} -eq 1 ]] &&
+        grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
 _pkgs_add || :
-
-if lspci | grep -P "VGA|3D|Display" | ! grep -q "NVIDIA" && ! ((1 >= nvidia_driver_series <= 3)) && [[ ${bootloader_type} -eq 1 ]]; then
-    grub-mkconfig -o /boot/grub/grub.cfg
-fi
 
 # Without this, Dux will not function correctly if ran by a different user than the home directories' assigned user.
 git config --global --add safe.directory /home/"${WHICH_USER}"/dux
