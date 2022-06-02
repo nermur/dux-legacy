@@ -47,7 +47,8 @@ else
 fi
 
 _wipe_partitions() {
-    wipefs -af "${DISK}*"       # Remove all partition-table signatures on selected disk
+    # shellcheck disable=SC2086
+    wipefs -af ${DISK}*         # Remove partition-table signatures on selected disk
     sgdisk -Z "${DISK}"         # Remove GPT & MBR data structures on selected disk
     sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
 }
