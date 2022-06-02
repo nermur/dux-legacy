@@ -46,8 +46,7 @@ else
     PARTITION3="${DISK}3"
 fi
 
-wipefs -af "${PARTITION2}" >&/dev/null
-wipefs -af "${PARTITION3}" >&/dev/null # Assumed here to remove LUKS2 signatures
+wipefs -af "${DISK}"
 sgdisk -Zo "${DISK}"                   # Remove GPT & MBR data structures and all partitions on selected disk
 sgdisk -a 2048 -o "${DISK}"            # Create GPT disk 2048 alignment
 
