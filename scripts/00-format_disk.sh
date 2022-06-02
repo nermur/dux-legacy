@@ -11,7 +11,8 @@ source "${GIT_DIR}/configs/settings.sh"
     set -x
 
 umount -flRq /mnt || :
-cryptsetup close {cleanit,lukspart} >&/dev/null || :
+cryptsetup close cleanit >&/dev/null || :
+cryptsetup close lukspart >&/dev/null || :
 
 lsblk -o PATH,MODEL,PARTLABEL,FSTYPE,FSVER,SIZE,FSUSE%,FSAVAIL,MOUNTPOINTS
 
@@ -54,8 +55,7 @@ _wipe_partitions() {
 }
 
 _secure_overwrite() {
-    echo -e "\nNOTE: Saying 'N' will use the normal erasure, which takes no time at all."
-    read -p $'\nEstimated wait time: minutes up to hours, depending on the disk medium and size.\nDo you want to securely erase this disk? [Y/N]: ' choice
+    read -p $'NOTE: Saying \'N\' will use the normal erasure, which takes no time at all.\nEstimated wait time: minutes up to hours, depending on the disk medium and size.\nDo you want to securely erase this disk? [Y/N]: ' choice
     case ${choice} in
     [Y]*)
         _wipe_partitions
