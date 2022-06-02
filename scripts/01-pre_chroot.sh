@@ -37,22 +37,23 @@ _make_dirs() {
 }
 
 # If the Btrfs filesystem doesn't exist on the partition containing "lukspart", create it.
-if ! lsblk -o FSTYPE "${LOCATION}" | grep -q "btrfs"; then
-	umount -flRq /mnt || :
-	mkfs.btrfs "${LOCATION}"
-	mount -t btrfs "${LOCATION}" /mnt
+if [[ ${MOUNT_ONLY} -ne 1 ]]; then
+	if ! lsblk -o FSTYPE "${LOCATION}" | grep -q "btrfs"; then
+		umount -flRq /mnt || :
+		mkfs.btrfs "${LOCATION}"
+		mount -t btrfs "${LOCATION}" /mnt
 
-	_make_dirs
-	mount -t vfat -o nodev,nosuid,noexec "${BOOT_PART}" /mnt/boot
+		_make_dirs
+		mount -t vfat -o nodev,nosuid,noexec "${BOOT_PART}" /mnt/boot
 
-	_make_subvolumes() {
-		for subvols in "${SUBVOL_LIST[@]}"; do
-			btrfs subvolume create /mnt/@"${subvols}"
-		done
-	}
-	_make_subvolumes
+		_make_subvolumes() {
+			for subvols in "${SUBVOL_LIST[@]}"; do
+				btrfs subvolume create /mnt/@"${subvols}"
+			done
+		}
+		_make_subvolumes
+	fi
 fi
-
 _mount_partitions() {
 	umount -flRq /mnt || :
 
@@ -66,12 +67,19 @@ _mount_partitions() {
 
 	mount -t btrfs -o "${OPTS}",subvolid=5 "${LOCATION}" /mnt/btrfs
 	mount -t btrfs -o "${OPTS}",subvol=@srv "${LOCATION}" /mnt/srv
-	mount -t btrfs -o "${OPTS}",subvol=@snapshots "${LOCATION}" /mnt/.snapshots
 	mount -t btrfs -o "${OPTS}",subvol=@pkg "${LOCATION}" /mnt/var/cache/pacman/pkg
 	mount -t btrfs -o "${OPTS}",subvol=@log "${LOCATION}" /mnt/var/log
 	mount -t btrfs -o "${OPTS}",subvol=@home "${LOCATION}" /mnt/home
 }
-_mount_partitions
+
+if [[ ${MOUNT_ONLY} -eq 1 ]]; then
+	_mount_partitions
+	echo -e "\nEntering chroot...\n"
+	arch-chroot /mnt /bin/zsh
+	exit 0
+else
+	_mount_partitions
+fi
 
 if [[ ${SKIP_REFLECTOR} -ne 1 ]]; then
 	# Use likely fastest mirrors in user selected region(s), or the user's own selected country list.

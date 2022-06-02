@@ -13,7 +13,7 @@ endif::[]
 . `# pacman -Sy git`
 . `# git clone https://github.com/nermur/dux`
 . If use_disk_encryption="1" -> `# cryptsetup open /dev/EXAMPLE3 lukspart`
-. `# DEBUG=1 bash ~/dux/scripts/01-pre_chroot.sh`
+. `# MOUNT_ONLY=1 bash ~/dux/scripts/01-pre_chroot.sh`
 . `# arch-chroot /mnt /bin/zsh`
 
 == Pinpointing system problems

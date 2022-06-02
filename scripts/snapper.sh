@@ -9,6 +9,11 @@ source "${GIT_DIR}/configs/settings.sh"
 
 clear
 
+if [[ ${NOT_CHROOT} -eq 0 ]]; then
+    echo -e "\nERROR: Do not run this script outside of the Arch Linux ISO!\n"
+	exit 1
+fi
+
 if [[ ${bootloader_type} -eq 1 ]]; then
     PKGS+="grub-btrfs "
     _pkgs_add
@@ -19,10 +24,7 @@ elif [[ ${bootloader_type} -eq 2 ]]; then
     _pkgs_aur_add
 fi
 
-# Snapper refuses to create a config if this directory exists.
-btrfs property set -ts /.snapshots ro false &&
-    umount -flRq /.snapshots || : &&
-    rm -rf "/.snapshots"
+mount -t btrfs -o "${OPTS}",subvol=@snapshots "${LOCATION}" /mnt/.snapshots
 
 _move2bkup /etc/{snapper/configs,conf.d/snapper}
 cp "${cp_flags}" "${GIT_DIR}"/files/etc/conf.d/snapper "/etc/conf.d/"
