@@ -11,15 +11,15 @@ source "${GIT_DIR}/configs/settings.sh"
 clear
 
 # Now is the right time to generate a initramfs.
-pacman -S --overwrite="*" mkinitcpio
-move2bkup "/etc/mkinitcpio.conf" &&
+pacman -S --quiet --noconfirm --ask=4 --overwrite="*" mkinitcpio
+_move2bkup "/etc/mkinitcpio.conf" &&
     cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.conf "/etc/"
 
 PKGS+="linux linux-headers "
 _pkgs_add || :
 
 if ! lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ((1 >= nvidia_driver_series <= 3)); then
-    source "${GIT_DIR}/scripts/_NVIDIA.sh"
+    (bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
 else
     # Still ran inside _NVIDIA.sh
     [[ ${bootloader_type} -eq 1 ]] &&

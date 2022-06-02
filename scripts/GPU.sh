@@ -63,7 +63,7 @@ _intel_setup() {
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
 	[[ ${avoid_nvidia_gpus} -ne 1 ]] && [[ ${DUX_INSTALLER} -ne 1 ]] &&
-		source "${GIT_DIR}/scripts/_NVIDIA.sh"
+		(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
 	;;&
 *"AMD/ATI"*)
 	[[ ${avoid_amd_gpus} -ne 1 ]] &&

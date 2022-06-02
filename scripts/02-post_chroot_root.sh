@@ -24,7 +24,7 @@ else
 fi
 
 _preparation() {
-	pacman -Sy --noconfirm --ask=4 archlinux-keyring && pacman -Su --noconfirm --ask=4
+	pacman -Sy --quiet --noconfirm --ask=4 archlinux-keyring && pacman -Su --quiet --noconfirm --ask=4
 
 	sed -i '/^#en_US.UTF-8 UTF-8/s/^#//' /etc/locale.gen
 	locale-gen
