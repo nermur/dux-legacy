@@ -77,7 +77,7 @@ _pipewire
 
 _gpu() {
 	[[ ${disable_gpu} -ne 1 ]] &&
-		(arch-chroot /mnt "${GIT_DIR}/scripts/GPU.sh" DUX_INSTALLER=1) |& tee "${GIT_DIR}/logs/GPU.log" || return
+		(arch-chroot /mnt "${GIT_DIR}/scripts/GPU.sh") |& tee "${GIT_DIR}/logs/GPU.log" || return
 }
 _gpu
 

@@ -126,11 +126,13 @@ _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
 
-[[ ${DUX_INSTALLER} -ne 1 ]] && [[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
-	mkinitcpio -P
+if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
+	[[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
+		mkinitcpio -P
 
-[[ ${DUX_INSTALLER} -ne 1 ]] && [[ ${REGENERATE_GRUB2_CONFIG} -eq 1 ]] &&
-	grub-mkconfig -o /boot/grub/grub.cfg
+	[[ ${REGENERATE_GRUB2_CONFIG} -eq 1 ]] &&
+		grub-mkconfig -o /boot/grub/grub.cfg
+fi
 
 cleanup() {
 	mkdir "${mkdir_flags}" "${BACKUPS}/etc/modprobe.d"

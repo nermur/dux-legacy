@@ -62,8 +62,10 @@ _intel_setup() {
 # shellcheck disable=SC2249
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
-	[[ ${avoid_nvidia_gpus} -ne 1 ]] && [[ ${DUX_INSTALLER} -ne 1 ]] &&
-		(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
+	if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
+		[[ ${avoid_nvidia_gpus} -ne 1 ]] &&
+			(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
+	fi
 	;;&
 *"AMD/ATI"*)
 	[[ ${avoid_amd_gpus} -ne 1 ]] &&
@@ -85,11 +87,13 @@ _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
 
-[[ ${DUX_INSTALLER} -ne 1 ]] && [[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
-	mkinitcpio -P
+if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
+	[[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
+		mkinitcpio -P
 
-[[ ${DUX_INSTALLER} -ne 1 ]] && [[ ${REGENERATE_GRUB2_CONFIG} -eq 1 ]] &&
-	grub-mkconfig -o /boot/grub/grub.cfg
+	[[ ${REGENERATE_GRUB2_CONFIG} -eq 1 ]] &&
+		grub-mkconfig -o /boot/grub/grub.cfg
+fi
 
 cleanup() {
 	mkdir "${mkdir_flags}" "${BACKUPS}/etc/modprobe.d"

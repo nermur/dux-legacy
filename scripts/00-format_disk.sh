@@ -80,3 +80,4 @@ _password_prompt() {
     fi
 }
 [[ ${use_disk_encryption} -eq 1 ]] && _password_prompt
+exit 0
