@@ -7,6 +7,8 @@ cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
 source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 
+clear
+
 if [[ ${bootloader_type} -eq 1 ]]; then
     PKGS+="grub-btrfs "
     _pkgs_add

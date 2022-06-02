@@ -23,15 +23,6 @@ else
 	ROOT_DISK=$(blkid -s PARTLABEL -s PARTUUID | sed -n '/"DUX"/p' | cut -f3 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 fi
 
-if [[ ${support_hibernation} -eq 1 ]]; then
-	truncate -s 0 /swapfile
-	chattr +C /swapfile
-	fallocate -l $((TOTAL_RAM / 2))MiB /swapfile
-	chmod 0600 /swapfile
-	mkswap /swapfile
-	swapon /swapfile
-fi
-
 _preparation() {
 	pacman -Sy --noconfirm --ask=4 archlinux-keyring && pacman -Su --noconfirm --ask=4
 

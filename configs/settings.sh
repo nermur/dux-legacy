@@ -33,9 +33,6 @@ hardware_fingerprint_reader="0"
 # 0: intended for 24/7 operation that can survive unexpected reboots.
 use_disk_encryption="1"
 
-# NOT FULLY TESTED YET
-support_hibernation="0"
-
 # 1: GRUB2
 # 2: rEFInd
 bootloader_type="2"
