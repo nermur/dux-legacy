@@ -126,7 +126,7 @@ _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
 
-if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
+if [[ ${NOT_CHROOT} -eq 1 ]]; then
 	[[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
 		mkinitcpio -P
 

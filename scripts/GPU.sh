@@ -62,7 +62,7 @@ _intel_setup() {
 # shellcheck disable=SC2249
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
-	if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
+	if [[ ${NOT_CHROOT} -eq 1 ]]; then
 		[[ ${avoid_nvidia_gpus} -ne 1 ]] &&
 			(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
 	fi
@@ -87,7 +87,7 @@ _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
 
-if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
+if [[ ${NOT_CHROOT} -eq 1 ]]; then
 	[[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
 		mkinitcpio -P
 
