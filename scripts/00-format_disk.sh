@@ -11,7 +11,7 @@ source "${GIT_DIR}/configs/settings.sh"
     set -x
 
 umount -flRq /mnt || :
-cryptsetup close lukspart >&/dev/null || :
+cryptsetup close {cleanit,lukspart} >&/dev/null || :
 
 lsblk -o PATH,MODEL,PARTLABEL,FSTYPE,FSVER,SIZE,FSUSE%,FSAVAIL,MOUNTPOINTS
 
@@ -46,9 +46,33 @@ else
     PARTITION3="${DISK}3"
 fi
 
-wipefs -af "${DISK}"
-sgdisk -Z "${DISK}"         # Remove GPT & MBR data structures and all partitions on selected disk
-sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
+_wipe_partitions() {
+    wipefs -af "${DISK}*"       # Remove all partition-table signatures on selected disk
+    sgdisk -Z "${DISK}"         # Remove GPT & MBR data structures on selected disk
+    sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
+}
+
+_secure_overwrite() {
+    echo -e "\nNOTE: Saying 'N' will use the normal erasure, which takes no time at all."
+    read -p $'\nEstimated wait time: minutes up to hours, depending on the disk medium and size.\nDo you want to securely erase this disk? [Y/N]: ' choice
+    case ${choice} in
+    [Y]*)
+        _wipe_partitions
+        cryptsetup open --type plain -d /dev/urandom "${DISK}" cleanit
+        ddrescue --force /dev/zero /dev/mapper/cleanit
+        cryptsetup close cleanit
+        ;;
+    [N]*)
+        _wipe_partitions
+        return 0
+        ;;
+    *)
+        echo -e "\nInvalid option!\nValid options: Y, N"
+        _secure_overwrite
+        ;;
+    esac
+}
+_secure_overwrite
 
 # Create partitions
 sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BOOTMBR' "${DISK}"    # Partition 1 (MBR "BIOS" boot)
