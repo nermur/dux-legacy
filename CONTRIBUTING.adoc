@@ -19,7 +19,8 @@ endif::[]
 NOTE: The overall quality of Dux degrades when adding features/options that don't get daily use by the person that primarily added those features/options in the first place. +
 You can expect higher quality from forking and doing this work yourself, since you know exactly why you want what you've added and how it should function, while I don't.
 
-* Other Linux kernels, especially `linux-hardened`.
+* Other Linux kernels, especially `linux-hardened` and `linux-zen`.
+** `linux-zen` used to be Dux's default, but it caused some PCs to fail booting while `linux` and `linux-lts` wouldn't.
 
 * Installers & uninstallers for other desktop environments, and any window manager setups.
 

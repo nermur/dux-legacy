@@ -89,9 +89,6 @@ This makes these types of storage highly responsive to your inputs.
 
 * `irqbalance`: manages IRQ interrupts more efficiently by being more aware of the current environment. One example is offloading IRQ interrupts to CPU affinities which have the lowest load on them. Another example is respecting VMs having their CPU affinities isolated, meaning irqbalance will offload the IRQ interrupts to CPU affinities that aren't isolated.
 
-* `Zen kernel`
-** PDS Process Scheduler for increased interactivity performance and FPS in video games, inclusion of BBRv2, and other tweaks that improve upon the vanilla Linux kernel for all use cases except Linux kernel developement/debugging.
-
 * `Flatpak`
 ** Visual inconsistencies with Flatpaks are mostly fixed.
 

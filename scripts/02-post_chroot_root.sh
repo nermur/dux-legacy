@@ -139,15 +139,13 @@ PKGS+="noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-hack ttf-liberation ttf-ca
 # Default packages, regardless of options selected.
 PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft libnewt pigz pbzip2 \
 strace usbutils linux-firmware gnome-keyring avahi nss-mdns ntfs-3g \
-man-db man-pages pacman-contrib snapper snap-pac mkinitcpio linux-zen linux-zen-headers bat \
+man-db man-pages pacman-contrib snapper snap-pac mkinitcpio bat \
 wget trash-cli reflector rebuild-detector vim "
 
 [[ ${bootloader_type} -eq 1 ]] &&
 	PKGS+="grub os-prober "
 [[ ${bootloader_type} -eq 2 ]] &&
 	PKGS+="refind "
-[[ ${include_kernel_lts} -eq 1 ]] &&
-	PKGS+="linux-lts linux-lts-headers "
 [[ -d "/sys/firmware/efi" ]] &&
 	PKGS+="efibootmgr "
 
@@ -182,9 +180,6 @@ esac
 # -Syuu (double -u) to start using the multilib repo now.
 # shellcheck disable=SC2086
 pacman -Syuu --quiet --noconfirm --ask=4 --needed ${PKGS}
-
-_move2bkup "/etc/mkinitcpio.conf" &&
-	cp "${cp_flags}" "${GIT_DIR}"/files/etc/mkinitcpio.conf "/etc/"
 
 # This'll prevent many unnecessary initramfs generations, speeding up the install process drastically.
 ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook

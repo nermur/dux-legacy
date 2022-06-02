@@ -25,6 +25,7 @@ _setup_gdm() {
 	SERVICES+="gdm.service "
 }
 
+# At one point it was required to install these before the rest of GNOME.
 PKGS="gdm libnm libnma "
 _pkgs_add
 PKGS=""

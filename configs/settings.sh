@@ -40,10 +40,6 @@ bootloader_type="2"
 [[ ! -d "/sys/firmware/efi" ]] &&
     bootloader_type="1"
 
-# A good backup incase linux-zen doesn't work right.
-# Will download around an extra 300MB.
-include_kernel_lts="1"
-
 # 0: Massive performance penalty on CPUs older than AMD Zen 2 or Intel 10th gen,
 # and caused a boot failure bug for Linux 5.18:
 # https://bugs.archlinux.org/task/74891?project=1&pagenum=1
