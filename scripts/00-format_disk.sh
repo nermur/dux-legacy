@@ -19,18 +19,18 @@ _select_disk() {
     read -rep $'\nDisk examples: /dev/sda or /dev/nvme0n1; don\'t use partition numbers like: /dev/sda1 or /dev/nvme0n1p1.\nInput your desired disk, then press ENTER: ' -i "/dev/" DISK
     _disk_selected() {
         echo -e "\n\e[1;35mSelected disk: ${DISK}\e[0m\n"
-        read -p "Is this correct? [y/n]: " choice
+        read -p "Is this correct? [Y/N]: " choice
     }
     _disk_selected
     case ${choice} in
-    [Yy]*)
+    [Y]*)
         return 0
         ;;
-    [Nn]*)
+    [N]*)
         _select_disk
         ;;
     *)
-        echo -e "\nInvalid option!\nValid options: Y, y, N, n"
+        echo -e "\nInvalid option!\nValid options: Y, N"
         _disk_selected
         ;;
     esac
@@ -47,17 +47,16 @@ else
 fi
 
 wipefs -af "${DISK}"
-sgdisk -Zo "${DISK}"        # Remove GPT & MBR data structures and all partitions on selected disk
+sgdisk -Z "${DISK}"         # Remove GPT & MBR data structures and all partitions on selected disk
 sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
 
 # Create partitions
 sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BOOTMBR' "${DISK}"    # Partition 1 (MBR "BIOS" boot)
 sgdisk -n 2::+1024M --typecode=2:ef00 --change-name=2:'BOOTEFI' "${DISK}" # Partition 2 (UEFI boot)
 sgdisk -n 3::-0 --typecode=3:8300 --change-name=3:'DUX' "${DISK}"         # Partition 3 (Root dir)
-if [[ ! -d "/sys/firmware/efi" ]]; then
+[[ ! -d "/sys/firmware/efi" ]] &&
     # Set partition 2 to use typecode ef02 if UEFI was not detected.
     sgdisk -A 1:set:2 "${DISK}"
-fi
 
 partprobe "${DISK}" # Make Linux kernel use the latest partition tables without rebooting
 
