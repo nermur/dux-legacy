@@ -73,7 +73,7 @@ _mount_partitions() {
 }
 _mount_partitions
 
-if [[ ${SKIP_MIRRORGEN} -ne 1 ]]; then
+if [[ ${SKIP_REFLECTOR} -ne 1 ]]; then
 	# Use likely fastest mirrors in user selected region(s), or the user's own selected country list.
 	# shellcheck disable=SC2086
 	reflector --verbose -c ${reflector_countrylist} -p https --delay 1 --score 12 --fastest 6 --save /etc/pacman.d/mirrorlist
