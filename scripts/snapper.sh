@@ -20,7 +20,8 @@ elif [[ ${bootloader_type} -eq 2 ]]; then
 fi
 
 # Snapper refuses to create a config if this directory exists.
-umount -flRq /.snapshots || : &&
+btrfs property set -ts /.snapshots ro false &&
+    umount -flRq /.snapshots || : &&
     rm -rf "/.snapshots"
 
 _move2bkup /etc/{snapper/configs,conf.d/snapper}
