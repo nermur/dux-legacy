@@ -47,8 +47,8 @@ else
 fi
 
 wipefs -af "${DISK}"
-sgdisk -Zo "${DISK}"                   # Remove GPT & MBR data structures and all partitions on selected disk
-sgdisk -a 2048 -o "${DISK}"            # Create GPT disk 2048 alignment
+sgdisk -Zo "${DISK}"        # Remove GPT & MBR data structures and all partitions on selected disk
+sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
 
 # Create partitions
 sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BOOTMBR' "${DISK}"    # Partition 1 (MBR "BIOS" boot)
