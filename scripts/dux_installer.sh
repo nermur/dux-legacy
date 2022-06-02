@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086,SC2312
+# shellcheck disable=SC2086
 set +H
 # "|| return" is used as an error handler.
 # NOTE: set -e has to be present in the scripts executed here for this to work.
@@ -95,11 +95,6 @@ _desktop_environment() {
 	esac
 }
 _desktop_environment
-
-_snapper() {
-	(arch-chroot /mnt "${GIT_DIR}/scripts/snapper.sh") |& tee "${GIT_DIR}/logs/snapper.log" || return
-}
-_snapper
 
 _04() {
 	(arch-chroot /mnt "${GIT_DIR}/scripts/04-finalize.sh") |& tee "${GIT_DIR}/logs/04-finalize.log" || return

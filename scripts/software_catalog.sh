@@ -8,6 +8,11 @@ source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 source "${GIT_DIR}/configs/optional_software.sh"
 
+if [[ ${NOT_CHROOT} -eq 0 ]]; then
+    echo -e "\nERROR: Do not run this script inside a chroot!\n"
+	exit 1
+fi
+
 set +e # Don't end the script if an installer errors.
 
 mkdir "${mkdir_flags}" /home/"${WHICH_USER}"/.config/systemd/user
@@ -37,6 +42,9 @@ _virtual_machines_setup() {
 
 		[[ ${REGENERATE_GRUB2_CONFIG} -eq 1 ]] &&
 			grub-mkconfig -o /boot/grub/grub.cfg
+
+		# Don't use Copy-on-Write (CoW) for virtual machine disks.
+		chattr +C "/var/lib/libvirt/images"
 
 		systemctl enable --now libvirtd.service
 

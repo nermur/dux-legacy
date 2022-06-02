@@ -36,9 +36,6 @@ _other_user_files() {
 		cp "${cp_flags}" "${GIT_DIR}"/files/home/.zsh_dux "/home/${WHICH_USER}/"
 }
 
-[[ ${hardware_nonwacom_drawing_tablet} -eq 1 ]] &&
-	PKGS_AUR+="digimend-drivers-git-dkms uclogic-tools "
-
 PKGS_AUR+="btrfs-assistant "
 _pkgs_aur_add
 

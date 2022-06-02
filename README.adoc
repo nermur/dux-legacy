@@ -80,6 +80,11 @@ https://github.com/systemd/systemd/issues/9725#issuecomment-564872011
 ** Allow for an easier data recovery if a disk gets damaged and/or starts to have bad sectors.
 ** To once a month automatically check (Scrub) over all filesystem data and metadata and verifying the checksums, repairing damage if present and possible.
 
+* `Snapper` instead of `Timeshift`
+** `Timeshift` is limited to taking snapshots of @ (root) and @home only.
+*** Taking snapshots encompassing all of @ (root) is very wasteful; Dux specifically makes Btrfs subvolumes for directories that should never be snapshotted, which are: `/srv, /var/cache/pacman/pkg, /var/log, /home`
+** `Snapper` makes read-only and replicable snapshots.
+
 * `GPT`
 ** Compared to MBR, GPT supports disks above 2TB capacity, 128 primary partitions instead of 4, and protects against boot record corruption.
 

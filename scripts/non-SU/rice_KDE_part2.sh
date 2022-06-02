@@ -7,6 +7,11 @@ cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
 source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 
+if [[ ${NOT_CHROOT} -eq 0 ]]; then
+    echo -e "\nERROR: Do not run this script inside a chroot!\n"
+	exit 1
+fi
+
 kwriteconfig5 --group "General" --key "XftAntialias" "true"
 kwriteconfig5 --group "General" --key "XftHintStyle" "${kde_font_hinting}"
 kwriteconfig5 --group "General" --key "XftSubPixel" "${kde_font_aliasing}"

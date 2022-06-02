@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086,SC2312
+# shellcheck disable=SC2086
 set +H
 set -e
 
@@ -9,6 +9,11 @@ source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 
 ln -rsf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
+_snapper() {
+	(bash "/home/${WHICH_USER}/dux/scripts/snapper.sh") |& tee "${GIT_DIR}/logs/snapper.log"
+}
+_snapper
 
 # Scripts in "_do_last" have to forcefully logout to apply changes.
 _do_last() {

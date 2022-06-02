@@ -10,8 +10,8 @@ source "${GIT_DIR}/configs/settings.sh"
 clear
 
 if [[ ${NOT_CHROOT} -eq 0 ]]; then
-    echo -e "\nERROR: Do not run this script outside of the Arch Linux ISO!\n"
-	exit 1
+    echo -e "\nERROR: Do not run this script inside a chroot!\n"
+    exit 1
 fi
 
 if [[ ${bootloader_type} -eq 1 ]]; then
@@ -24,21 +24,19 @@ elif [[ ${bootloader_type} -eq 2 ]]; then
     _pkgs_aur_add
 fi
 
-mount -t btrfs -o "${OPTS}",subvol=@snapshots "${LOCATION}" /mnt/.snapshots
-
-_move2bkup /etc/{snapper/configs,conf.d/snapper}
-cp "${cp_flags}" "${GIT_DIR}"/files/etc/conf.d/snapper "/etc/conf.d/"
-mkdir "${mkdir_flags}" /etc/snapper/configs
+# Snapper refuses to create a config if this directory exists.
+btrfs property set -ts /.snapshots ro false
+umount -flRq /.snapshots || :
+_move2bkup {/.snapshots,/etc/snapper/configs/root} &&
+    mkdir "${mkdir_flags}" /etc/snapper/configs
 
 if [[ ${DEBUG} -eq 1 ]]; then
-    snapper --no-dbus -q delete-config || :
-    snapper --no-dbus -q -c root create-config /
+    snapper -q delete-config || :
+    snapper -q -c root create-config /
 else
-    snapper --no-dbus -q delete-config &>/dev/null || :
-    snapper --no-dbus -q -c root create-config / &>/dev/null
+    snapper -q delete-config &>/dev/null || :
+    snapper -q -c root create-config / &>/dev/null
 fi
-
-rm -f "/etc/snapper/configs/root"
 cp "${cp_flags}" "${GIT_DIR}"/files/etc/snapper/configs/root "/etc/snapper/configs/"
 
 if [[ ${bootloader_type} -eq 1 ]]; then

@@ -21,9 +21,6 @@ hardware_mobile_broadband="0"
 # NOTE: WiFi and Bluetooth are inseparable here.
 hardware_wifi_and_bluetooth="1"
 
-# https://digimend.github.io/tablets/
-hardware_nonwacom_drawing_tablet="0"
-
 # Supported printer list: https://www.openprinting.org/printers
 hardware_printers_and_scanners="1"
 
