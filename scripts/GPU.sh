@@ -62,8 +62,7 @@ _intel_setup() {
 # shellcheck disable=SC2249
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
-	if [[ ${NOT_CHROOT} -eq 1 ]]; then
-		[[ ${avoid_nvidia_gpus} -ne 1 ]] &&
+	if [[ ${NOT_CHROOT} -eq 1 ]] && [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
 			(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
 	fi
 	;;&

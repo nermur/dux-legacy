@@ -18,7 +18,11 @@ _move2bkup "/etc/mkinitcpio.conf" &&
 PKGS+="linux linux-headers "
 _pkgs_add || :
 
-if ! lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA" && ((1 >= nvidia_driver_series <= 3)); then
+if lspci | grep -P "VGA|3D|Display" | grep -q "NVIDIA"; then
+    HAS_NVIDIA_GPU=1
+fi
+
+if [[ ${HAS_NVIDIA_GPU} -eq 1 ]] && ((1 >= nvidia_driver_series <= 3)); then
     (bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
 else
     # Still ran inside _NVIDIA.sh

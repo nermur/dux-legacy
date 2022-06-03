@@ -115,5 +115,18 @@ This makes these types of storage highly responsive to your inputs.
 * `dbus-broker`
 ** Replaces `dbus-daemon` for the system bus, as it's faster and more stable.
 
+== Other Arch Linux installers
+
+NOTE: These I think are decent for what they are. Some of the code and ideas in Dux have been inspired by what they've done for their projects.
+
+. https://www.arcolinux.info/ or https://arcolinux.com/
+** There are many good learning resources on Arch Linux provided by here too.
+. https://endeavouros.com/
+. https://manjaro.org/
+. https://anarchyinstaller.gitlab.io/
+. https://github.com/classy-giraffe/easy-arch
+. https://github.com/ChrisTitusTech/ArchTitus
+. https://garudalinux.org/
+
 ___
 => link:0.1_start.adoc[0.1_start.adoc]
