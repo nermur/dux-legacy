@@ -46,7 +46,7 @@ _intel_setup() {
 	PKGS+="intel-media-sdk vulkan-intel "
 
 	[[ ${intel_video_accel} -eq 1 ]] &&
-		PKGS+="libva-intel-driver "
+		PKGS+="libva-intel-driver lib32-libva-intel-driver "
 	[[ ${intel_video_accel} -eq 2 ]] &&
 		PKGS+="intel-media-driver "
 

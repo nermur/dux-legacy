@@ -49,13 +49,12 @@ fi
 
 _wipe_partitions() {
     # shellcheck disable=SC2086
-    wipefs -af ${DISK}*         # Remove partition-table signatures on selected disk
-    sgdisk -Z "${DISK}"         # Remove GPT & MBR data structures on selected disk
-    sgdisk -a 2048 -o "${DISK}" # Create GPT disk 2048 alignment
+    wipefs -af ${DISK}* # Remove partition-table signatures on selected disk
+    sgdisk -Z "${DISK}" # Remove GPT & MBR data structures on selected disk
 }
 
 _secure_overwrite() {
-    read -p $'NOTE: Saying \'N\' will use the normal erasure, which takes no time at all.\nEstimated wait time: minutes up to hours, depending on the disk medium and size.\nDo you want to securely erase this disk? [Y/N]: ' choice
+    read -p $'\nNOTE: Saying \'N\' will use the normal erasure, which takes no time at all.\nEstimated wait time: minutes up to hours, depending on the disk medium and size.\nDo you want to securely erase this disk? [Y/N]: ' choice
     case ${choice} in
     [Y]*)
         _wipe_partitions
@@ -75,7 +74,7 @@ _secure_overwrite() {
 }
 _secure_overwrite
 
-# Create partitions
+sgdisk -a 2048 -o "${DISK}"                                               # Create GPT disk 2048 alignment
 sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BOOTMBR' "${DISK}"    # Partition 1 (MBR "BIOS" boot)
 sgdisk -n 2::+1024M --typecode=2:ef00 --change-name=2:'BOOTEFI' "${DISK}" # Partition 2 (UEFI boot)
 sgdisk -n 3::-0 --typecode=3:8300 --change-name=3:'DUX' "${DISK}"         # Partition 3 (Root dir)
