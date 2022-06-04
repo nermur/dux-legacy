@@ -8,7 +8,7 @@ source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 source "${GIT_DIR}/configs/optional_software.sh"
 
-if [[ ${NOT_CHROOT} -eq 0 ]]; then
+if [[ ${IS_CHROOT} -eq 0 ]]; then
     echo -e "\nERROR: Do not run this script inside a chroot!\n"
 	exit 1
 fi

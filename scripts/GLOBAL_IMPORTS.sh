@@ -35,13 +35,15 @@ fi
 	SYSTEMD_USER_ENV="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus XDG_RUNTIME_DIR=/run/user/1000" &&
 	export SYSTEMD_USER_ENV
 
-NOT_CHROOT=$(systemd-detect-virt --chroot >&/dev/null) || :
+if systemd-detect-virt --chroot >&/dev/null; then
+	IS_CHROOT=1
+fi
 
 # INITIAL_USER = running from arch-chroot
 # LOGIN_USER = not a chroot or permission denied (DENY_SUPERUSER=1)
-if [[ ${NOT_CHROOT} -eq 0 ]]; then
+if [[ ${IS_CHROOT} -eq 1 ]]; then
 	WHICH_USER="${INITIAL_USER}" && export WHICH_USER
-elif [[ ${NOT_CHROOT} -eq 1 ]]; then
+elif [[ ${IS_CHROOT} -eq 0 ]]; then
 	WHICH_USER="${LOGIN_USER}" && export WHICH_USER
 fi
 

@@ -60,17 +60,20 @@ _intel_setup() {
 
 # grep: -P/--perl-regexp benched faster than -E/--extended-regexp
 # shellcheck disable=SC2249
-case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel Corporation|VMware SVGA|Red Hat") in
+case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
-	if [[ ${NOT_CHROOT} -eq 1 ]] && [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
+	_nvidia_setup() {
+		if [[ ${IS_CHROOT} -eq 0 ]] && [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
 			(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
-	fi
+		fi
+	}
+	_nvidia_setup
 	;;&
 *"AMD/ATI"*)
 	[[ ${avoid_amd_gpus} -ne 1 ]] &&
 		_amd_setup
 	;;&
-*"Intel Corporation"*)
+*"Intel"*)
 	[[ ${avoid_intel_gpus} -ne 1 ]] &&
 		_intel_setup
 	;;&
@@ -86,7 +89,7 @@ _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
 
-if [[ ${NOT_CHROOT} -eq 1 ]]; then
+if [[ ${IS_CHROOT} -eq 0 ]]; then
 	[[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
 		mkinitcpio -P
 
