@@ -63,7 +63,7 @@ _intel_setup() {
 case $(lspci | grep -P "VGA|3D|Display" | grep -Po "NVIDIA|AMD/ATI|Intel|VMware SVGA|Red Hat") in
 *"NVIDIA"*)
 	_nvidia_setup() {
-		if [[ ${IS_CHROOT} -eq 0 ]] && [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
+		if [[ ${avoid_nvidia_gpus} -ne 1 ]]; then
 			(bash "${GIT_DIR}/scripts/_NVIDIA.sh") |& tee "${GIT_DIR}/logs/_NVIDIA.log" || return
 		fi
 	}

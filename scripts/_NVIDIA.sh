@@ -126,7 +126,7 @@ _pkgs_add
 _pkgs_aur_add || :
 _flatpaks_add || :
 
-if [[ ${IS_CHROOT} -eq 1 ]]; then
+if [[ ${IS_CHROOT} -eq 0 ]]; then
 	[[ ${REGENERATE_INITRAMFS} -eq 1 ]] &&
 		mkinitcpio -P
 

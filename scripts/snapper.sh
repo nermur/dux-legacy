@@ -9,7 +9,7 @@ source "${GIT_DIR}/configs/settings.sh"
 
 clear
 
-if [[ ${IS_CHROOT} -eq 0 ]]; then
+if [[ ${IS_CHROOT} -eq 1 ]]; then
     echo -e "\nERROR: Do not run this script inside a chroot!\n"
     exit 1
 fi
