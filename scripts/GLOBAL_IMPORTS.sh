@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2034,SC2086
 set +H
-set -e
 
 LOGIN_USER="$(stat -c %U "$(readlink /proc/self/fd/0)")"
 
@@ -20,6 +19,13 @@ else
 	cp_flags="-f"
 	mkdir_flags="-p"
 	mv_flags="-f"
+fi
+
+if [[ ${KEEP_GOING} -eq 1 ]]; then
+	set +e
+else
+	set -e
+
 fi
 
 [[ -z ${DATE:-} ]] &&

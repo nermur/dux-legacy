@@ -76,9 +76,6 @@ qbittorrent="1"
 # Image/GIF viewer & editor.
 nomacs="1"
 
-# A professional image editor.
-gimp="1"
-
 # Video downloader (CLI).
 yt_dlp="1"
 
@@ -91,8 +88,8 @@ telegram="1"
 # Git GUI.
 github_desktop="1"
 
-# A comprehensive process manager. 
-qps="1"
+# GNOME System Monitor: The best designed process manager; easy to use and comprehensive. 
+task_manager="1"
 
 # Video game helpers: GOverlay, MangoHUD, Lutris.
 vg_toolbox="1"

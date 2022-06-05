@@ -2,18 +2,18 @@
 # shellcheck disable=SC2154
 set +H
 
+export KEEP_GOING=1
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
 source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
+unset KEEP_GOING
 source "${GIT_DIR}/configs/settings.sh"
 source "${GIT_DIR}/configs/optional_software.sh"
 
 if [[ ${IS_CHROOT} -eq 1 ]]; then
-    echo -e "\nERROR: Do not run this script inside a chroot!\n"
+	echo -e "\nERROR: Do not run this script inside a chroot!\n"
 	exit 1
 fi
-
-set +e # Don't end the script if an installer errors.
 
 mkdir "${mkdir_flags}" /home/"${WHICH_USER}"/.config/systemd/user
 chown -R "${WHICH_USER}:${WHICH_USER}" "/home/${WHICH_USER}/.config/systemd/user"
@@ -123,9 +123,6 @@ fi
 [[ ${nomacs} -eq 1 ]] &&
 	PKGS+="nomacs "
 
-[[ ${gimp} -eq 1 ]] &&
-	PKGS+="gimp "
-
 [[ ${yt_dlp} -eq 1 ]] &&
 	PKGS+="aria2 atomicparsley ffmpeg rtmpdump yt-dlp "
 
@@ -149,8 +146,8 @@ if [[ ${cxx_toolbox} -eq 1 ]]; then
 	PKGS_AUR+="lib32-gperftools "
 fi
 
-[[ ${qps} -eq 1 ]] &&
-	PKGS_AUR+="qps "
+[[ ${task_manager} -eq 1 ]] &&
+	PKGS+="gnome-system-monitor "
 
 # Anki specifically forces the Qt stylesheets, so Kvantum and others don't work; this is not a Flatpak bug.
 [[ ${anki} -eq 1 ]] &&
@@ -158,7 +155,7 @@ fi
 
 if [[ ${vg_toolbox} -eq 1 ]]; then
 	PKGS+="lutris "
-	PKGS_AUR+="goverlay-bin mangohud-common-x11 mangohud-x11 lib32-mangohud-x11 "
+	PKGS_AUR+="goverlay-bin mangohud lib32-mangohud "
 	FLATPAKS+="net.davidotek.pupgui2 "
 fi
 
