@@ -30,6 +30,9 @@ PKGS="gdm libnm libnma "
 _pkgs_add
 PKGS=""
 
+[[ ${gnome_remote_desktop} -eq 1 ]] &&
+	PKGS+="gnome-remote-desktop "
+
 PKGS+="gnome-backgrounds gnome-themes-extra gnome-shell gnome-shell-extensions gnome-session gnome-control-center networkmanager \
 gnome-clocks gnome-weather gnome-tweaks \
 gsettings-desktop-schemas xdg-desktop-portal xdg-desktop-portal-gtk ibus xdg-desktop-portal-gnome \

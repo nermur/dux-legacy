@@ -7,7 +7,7 @@ set -a
 spotify="1"
 
 # An adblocker for Spotify Free users.
-spotify_adblock="1"
+spotify_adblock="0"
 
 # Official Discord client with additional safety and privacy provided by Flatpak's sandboxing.
 # However, this sandboxing prevents the following features from working out of the box: 
@@ -32,6 +32,9 @@ easyeffects="0"
 
 # C/C++ debugging and reverse engineering: Valgrind, GDB, radere2 + ghidra (graphical interface: Cutter), pwndbg.
 cxx_toolbox="0"
+
+# Remote Desktop Client for: RDP, SFTP, SPICE, SSH, VNC, X2Go
+remmina="1"
 
 # The most private Chromium-based browser with a profitable business model that does not sacrifice your security and privacy.
 # https://privacytests.org/

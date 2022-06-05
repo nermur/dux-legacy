@@ -68,6 +68,9 @@ desktop_environment="1"
 gdm_auto_login="1"
 gdm_disable_wayland="0"
 
+# Provides "Remote Desktop" and "Remote Login" in Settings -> Sharing.
+gnome_remote_desktop="0"
+
 # It's not recommended to run the non-riced/vanilla GNOME.
 allow_gnome_rice="1"
 
@@ -101,6 +104,9 @@ fi
 sddm_autologin="1"
 sddm_autologin_session_type="plasma" # plasma, plasmawayland
 
+# Provides "Applications -> Internet -> Desktop Sharing (Krfb)"
+kde_remote_desktop="0"
+
 # A touchscreen keyboard.
 kde_install_virtual_keyboard="0"
 # For Wacom-based touchscreens and tablets.
@@ -108,7 +114,7 @@ kde_install_wacom_configurator="0"
 # Try this only if KDE seems buggy.
 kde_use_kwinft="0"
 
-# Like GNOME, care was taken to ensure this doesn't break anything.
+# Care was taken to ensure this doesn't break anything.
 allow_kde_rice="1"
 
 if [[ ${allow_kde_rice} -eq 1 ]]; then

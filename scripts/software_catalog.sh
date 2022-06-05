@@ -61,6 +61,9 @@ _virtual_machines_setup() {
 [[ ${spotify_adblock} -eq 1 ]] &&
 	PKGS_AUR+="spotify-adblock-git spotify-remove-ad-banner "
 
+[[ ${remmina} -eq 1 ]] &&
+	PKGS+="remmina libvncserver spice-gtk freerdp "
+
 [[ ${easyeffects} -eq 1 ]] &&
 	PKGS+="easyeffects "
 

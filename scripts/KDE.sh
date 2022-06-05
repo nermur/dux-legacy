@@ -30,6 +30,9 @@ _setup_sddm() {
 	SERVICES+="sddm.service "
 }
 
+[[ ${kde_remote_desktop} -eq 1 ]] &&
+	PKGS+="krfb "
+
 if [[ ${kde_install_virtual_keyboard} -eq 1 ]]; then
 	PKGS+="qt5-virtualkeyboard "
 	kwriteconfig5 --file "${SDDM_CONF}" --group "General" --key "InputMethod" "qtvirtualkeyboard"
