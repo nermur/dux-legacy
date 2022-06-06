@@ -153,10 +153,10 @@ case $(systemd-detect-virt) in
 "none")
 	if [[ ${CPU_VENDOR} = "AuthenticAMD" ]]; then
 		PKGS+="amd-ucode "
-		MICROCODE="initrd=amd-ucode.img initrd=vmlinuz-linux"
+		MICROCODE="initrd=amd-ucode.img initrd=initramfs-%v.img"
 	elif [[ ${CPU_VENDOR} = "GenuineIntel" ]]; then
 		PKGS+="intel-ucode "
-		MICROCODE="initrd=intel-ucode.img initrd=vmlinuz-linux"
+		MICROCODE="initrd=intel-ucode.img initrd=initramfs-%v.img"
 	fi
 	;;
 "kvm")
