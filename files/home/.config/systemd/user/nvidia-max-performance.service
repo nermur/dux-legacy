@@ -6,4 +6,4 @@ After=display-manager.service
 ExecStart=nvidia-settings -a "[gpu:0]/GpuPowerMizerMode=1"
 
 [Install]
-WantedBy=autostart.target
+After=graphical.target

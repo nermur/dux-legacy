@@ -81,8 +81,14 @@ fi
 [[ ${vorta} -eq 1 ]] &&
 	FLATPAKS+="com.borgbase.Vorta "
 
-[[ ${dolphin} -eq 1 ]] &&
-	PKGS+="ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl "
+if [[ ${dolphin} -eq 1 ]]; then
+	PKGS+="kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl "
+	_config_dolphin() {
+		local CONF="/home/${WHICH_USER}/.config/dolphinrc"
+		kwriteconfig5 --file "${CONF}" --group "General" --key "ShowFullPath" "true"
+		kwriteconfig5 --file "${CONF}" --group "General" --key "ShowSpaceInfo" "false"
+	}
+fi
 
 if [[ ${mpv} -eq 1 ]]; then
 	PKGS+="mpv "
@@ -108,8 +114,10 @@ if [[ ${obs_studio} -eq 1 ]]; then
 		PKGS+="pipewire-v4l2 lib32-pipewire-v4l2 "
 	fi
 	# Autostart OBS to make it a sort of NVIDIA ShadowPlay or AMD ReLive.
-	sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} DENY_SUPERUSER=1 cp ${cp_flags} ${GIT_DIR}/files/home/.config/systemd/user/obs-studio.service /home/${WHICH_USER}/.config/systemd/user/"
-	sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} systemctl --user enable obs-studio.service"
+	_obs_autorun() {
+		sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} DENY_SUPERUSER=1 cp ${cp_flags} ${GIT_DIR}/files/home/.config/systemd/user/obs-studio.service /home/${WHICH_USER}/.config/systemd/user/"
+		sudo -H -u "${WHICH_USER}" bash -c "${SYSTEMD_USER_ENV} systemctl --user enable obs-studio.service"
+	}
 fi
 
 if [[ ${brave} -eq 1 ]]; then
@@ -123,8 +131,18 @@ fi
 [[ ${qbittorrent} -eq 1 ]] &&
 	PKGS+="qbittorrent "
 
-[[ ${nomacs} -eq 1 ]] &&
-	PKGS+="nomacs "
+if [[ ${nomacs} -eq 1 ]]; then
+	PKGS+="kconfig nomacs "
+	_config_nomacs() {
+		mkdir -p "/home/${WHICH_USER}/.config/nomacs"
+		local CONF="/home/${WHICH_USER}/.config/nomacs/Image Lounge.conf"
+		kwriteconfig5 --file "${CONF}" --group "DisplaySettings" --key "themeName312" "System.css"
+		if [[ ${desktop_environment} -eq 1 ]] && [[ ${allow_gnome_rice} -eq 1 ]] || [[ ${desktop_environment} -eq 2 ]] && [[ ${allow_kde_rice} -eq 1 ]]; then
+			kwriteconfig5 --file "${CONF}" --group "DisplaySettings" --key "defaultIconColor" "false"
+			kwriteconfig5 --file "${CONF}" --group "DisplaySettings" --key "iconColorRGBA" "4294967295"
+		fi
+	}
+fi
 
 [[ ${yt_dlp} -eq 1 ]] &&
 	PKGS+="aria2 atomicparsley ffmpeg rtmpdump yt-dlp "
@@ -172,4 +190,7 @@ _flatpaks_add
 # shellcheck disable=SC2086
 _systemctl enable --now ${SERVICES}
 
+_config_nomacs
+_config_dolphin
+_obs_autorun
 _virtual_machines_setup

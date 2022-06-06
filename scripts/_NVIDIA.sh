@@ -14,32 +14,27 @@ _nouveau_setup() {
 		cp "${cp_flags}" "${GIT_DIR}"/files/etc/modprobe.d/nouveau.conf "/etc/modprobe.d/"
 
 	_nouveau_reclocking() {
-		GPU_PSTATE=$(whiptail --inputbox "$(</sys/kernel/debug/dri/0/pstate)" 0 0 --title "Specify highest power state (likely 0f); do not use the AC power state!" 3>&1 1>&2 2>&3)
-		exitstatus=$?
-		if [[ ${exitstatus} -eq 0 ]]; then
-			# Kernel parameter only; reclocking later (say, after graphical.target) is likely to crash the GPU.
-			NOUVEAU_RECLOCK="nouveau.config=NvClkMode=$((16#${GPU_PSTATE}))"
-			local PARAMS="${NOUVEAU_RECLOCK}"
-			_modify_kernel_parameters
-		fi
+		# Kernel parameter only; reclocking later (say, after graphical.target) is likely to crash the GPU.
+		NOUVEAU_RECLOCK="nouveau.config=NvClkMode=$((16#0f))"
+		local PARAMS="${NOUVEAU_RECLOCK}"
+		_modify_kernel_parameters
 	}
-	_nouveau_reclocking
 
 	# Works fine, though using X11 instead of Wayland is bad on Nouveau
 	printf "needs_root_rights = no" >/etc/X11/Xwrapper.config
 
 	_nouveau_custom_parameters() {
 		if [[ ${nouveau_custom_parameters} -eq 1 ]]; then
-			# Atomic mode-setting reduces potential flickering while also being quicker, the result is buttery-smooth rendering under Wayland; disabled due to instability
-			# Message Signaled Interrupts lowers system latency ("DPC latency" on Windows) while increasing GPU performance
+			# atomic=0: Atomic mode-setting reduces potential flickering while also being quicker, the result is buttery-smooth rendering under Wayland; disabled due to instability
+			# NvMSI=1: Message Signaled Interrupts lowers system latency ("DPC latency" on Windows) while increasing GPU performance
 			#
 			# init_on_alloc=0 init_on_free=0: https://gitlab.freedesktop.org/xorg/driver/xf86-video-nouveau/-/issues/547
 			# cipher=0: https://gitlab.freedesktop.org/xorg/driver/xf86-video-nouveau/-/issues/547#note_1097449
 			local PARAMS="init_on_alloc=0 init_on_free=0 nouveau.atomic=0 nouveau.config=NvMSI=1 nouveau.config=cipher=0"
 			_modify_kernel_parameters
+			_nouveau_reclocking
 		fi
 	}
-	_nouveau_custom_parameters
 
 	# Have to rebuild initramfs to apply new kernel module config changes by /etc/modprobe.d
 	REGENERATE_INITRAMFS=1
@@ -98,28 +93,28 @@ _nvidia_setup() {
 
 case ${nvidia_driver_series} in
 1)
-    _nvidia_setup
-    PKGS+="nvidia-dkms egl-wayland nvidia-utils opencl-nvidia libxnvctrl nvidia-settings \
+	_nvidia_setup
+	PKGS+="nvidia-dkms egl-wayland nvidia-utils opencl-nvidia libxnvctrl nvidia-settings \
 				lib32-nvidia-utils lib32-opencl-nvidia "
-    ;;
+	;;
 2)
-    _nvidia_setup
-    PKGS+="egl-wayland "
-    PKGS_AUR+="nvidia-470xx-dkms nvidia-470xx-utils opencl-nvidia-470xx libxnvctrl-470xx nvidia-470xx-settings \
+	_nvidia_setup
+	PKGS+="egl-wayland "
+	PKGS_AUR+="nvidia-470xx-dkms nvidia-470xx-utils opencl-nvidia-470xx libxnvctrl-470xx nvidia-470xx-settings \
 				lib32-nvidia-470xx-utils lib32-opencl-nvidia-470xx "
-    ;;
+	;;
 3) # Settings for current drivers seem to work fine for 390.xxx
-    _nvidia_setup
-    PKGS+="egl-wayland "
-    PKGS_AUR+="nvidia-390xx-dkms nvidia-390xx-utils opencl-nvidia-390xx libxnvctrl-390xx nvidia-390xx-settings \
+	_nvidia_setup
+	PKGS+="egl-wayland "
+	PKGS_AUR+="nvidia-390xx-dkms nvidia-390xx-utils opencl-nvidia-390xx libxnvctrl-390xx nvidia-390xx-settings \
 				lib32-nvidia-390xx-utils lib32-opencl-nvidia-390xx "
-    ;;
+	;;
 4)
-    _nouveau_setup
-    ;;
+	_nouveau_setup
+	;;
 *)
-    printf "\nWARNING: No valid 'nvidia_driver_series' option was specified!\n"
-    ;;
+	printf "\nWARNING: No valid 'nvidia_driver_series' option was specified!\n"
+	;;
 esac
 
 _pkgs_add

@@ -134,7 +134,7 @@ fi
 PKGS+="noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-hack ttf-liberation ttf-carlito ttf-caladea \
 	dconf-editor gnome-logs konsole \
 	flatpak gsettings-desktop-schemas xdg-desktop-portal xdg-desktop-portal-gtk ibus \
-	ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl "
+	kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl "
 
 # Default packages, regardless of options selected.
 PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft libnewt pigz pbzip2 \
@@ -153,8 +153,10 @@ case $(systemd-detect-virt) in
 "none")
 	if [[ ${CPU_VENDOR} = "AuthenticAMD" ]]; then
 		PKGS+="amd-ucode "
+		MICROCODE="initrd=amd-ucode.img initrd=vmlinuz-linux"
 	elif [[ ${CPU_VENDOR} = "GenuineIntel" ]]; then
 		PKGS+="intel-ucode "
+		MICROCODE="initrd=intel-ucode.img initrd=vmlinuz-linux"
 	fi
 	;;
 "kvm")
@@ -181,6 +183,13 @@ esac
 # shellcheck disable=SC2086
 pacman -Syuu --quiet --noconfirm --ask=4 --needed ${PKGS}
 
+_config_dolphin() {
+	local CONF="/home/${WHICH_USER}/.config/dolphinrc"
+	kwriteconfig5 --file "${CONF}" --group "General" --key "ShowFullPath" "true"
+	kwriteconfig5 --file "${CONF}" --group "General" --key "ShowSpaceInfo" "false"
+}
+_config_dolphin
+
 # This'll prevent many unnecessary initramfs generations, speeding up the install process drastically.
 ln -sf /dev/null /usr/share/libalpm/hooks/60-mkinitcpio-remove.hook
 ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
@@ -196,7 +205,7 @@ _systemctl enable ${SERVICES}
 systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service
 
 [[ ${disable_cpu_security_mitigations} -eq 1 ]] &&
-	MITIGATIONS_OFF="mitigations=off"
+	MITIGATIONS_OFF="ibt=off mitigations=off"
 
 if [[ ${use_disk_encryption} -eq 1 ]]; then
 	REQUIRED_PARAMS="rd.luks.name=${ROOT_DISK}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
@@ -206,7 +215,7 @@ fi
 
 # https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v1.1.pdf
 # acpi_osi=Linux: tell BIOS to load their ACPI tables for Linux.
-COMMON_PARAMS="loglevel=3 sysrq_always_enabled=1 quiet add_efi_memmap acpi_osi=Linux nmi_watchdog=0 skew_tick=1 mce=ignore_ce nosoftlockup"
+COMMON_PARAMS="loglevel=3 sysrq_always_enabled=1 quiet add_efi_memmap acpi_osi=Linux nmi_watchdog=0 skew_tick=1 mce=ignore_ce nosoftlockup ${MICROCODE:-}"
 
 if [[ ${bootloader_type} -eq 1 ]]; then
 	_setup_grub2_bootloader() {
@@ -247,7 +256,7 @@ elif [[ ${bootloader_type} -eq 2 ]]; then
 
 "Boot to single-user mode"  "single ${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS} ${COMMON_PARAMS}"
 
-"Boot with minimal options"  "${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS}"
+"Boot with minimal options"  "${MITIGATIONS_OFF:-} ${REQUIRED_PARAMS} ${MICROCODE:-}"
 EOF
 	}
 	_setup_refind_bootloader

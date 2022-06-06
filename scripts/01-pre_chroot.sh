@@ -14,18 +14,15 @@ if ! grep -q "'archiso'" /etc/mkinitcpio.d/linux.preset; then
 	echo -e "\nERROR: Do not run this script outside of the Arch Linux ISO!\n"
 	exit 1
 fi
+
+BOOT_PART=$(blkid -s PARTLABEL | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
+
 if [[ ${use_disk_encryption} -eq 1 ]]; then
 	if cryptsetup status "lukspart" | grep -q "inactive"; then
 		echo -e "\nERROR: Forgot to mount the LUKS2 partition as 'lukspart'?\n"
 		exit 1
 	fi
-fi
-
-BOOT_PART=$(blkid -s PARTLABEL | sed -n '/BOOTEFI/p' | cut -f1 -d' ' | tr -d :)
-
-if [[ ${use_disk_encryption} -eq 1 ]]; then
-	ROOT_DISK=$(blkid -s UUID -s TYPE | sed -n '/crypto_LUKS/p' | cut -f2 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
-	LOCATION="/dev/disk/by-uuid/${ROOT_DISK}"
+	LOCATION="/dev/mapper/lukspart"
 else
 	ROOT_DISK=$(blkid -s PARTLABEL -s PARTUUID | sed -n '/"DUX"/p' | cut -f3 -d' ' | cut -d '=' -f2 | sed 's/\"//g')
 	LOCATION="/dev/disk/by-partuuid/${ROOT_DISK}"

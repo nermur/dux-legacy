@@ -156,7 +156,8 @@ avoid_amd_gpus="0"
 # 2: Proprietary 470.xxx
 # 3: Proprietary 390.xxx (For Fermi 1.0 to Maxwell 1.0)
 # 4: Open-source (For Maxwell 1.0 or older)
-nvidia_driver_series="1"
+# Warning: Non open-source drivers can cause Linux to fail booting!
+nvidia_driver_series="4"
 
 case ${nvidia_driver_series} in
 [1-3])

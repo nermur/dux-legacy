@@ -26,10 +26,6 @@ _set_font_preferences() {
 }
 
 _other_user_files() {
-	# Allow creating user systemd services to start an application; a better alternative to XDG autorun.
-	_move2bkup "/home/${WHICH_USER}/.config/systemd/user/autostart.target" &&
-		cp "${cp_flags}" "${GIT_DIR}"/files/home/.config/systemd/user/autostart.target "/home/${WHICH_USER}/.config/systemd/user/"
-
 	if ! grep -q '[ -f ".zsh_dux" ] && source .zsh_dux' "/home/${WHICH_USER}/.zshrc.local" >&/dev/null; then
 		printf '\n[ -f ".zsh_dux" ] && source .zsh_dux' >>"/home/${WHICH_USER}/.zshrc.local"
 	fi
