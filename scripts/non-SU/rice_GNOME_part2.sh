@@ -69,18 +69,11 @@ _org_gnome_desktop() {
 _org_gnome_desktop
 
 gsettings set org.gnome.shell disabled-extensions "[]"
-gsettings set org.gnome.shell enabled-extensions "[]"
+# If an extension doesn't exist, it'll be ignored.
+gsettings set org.gnome.shell enabled-extensions "['appindicatorsupport@rgcjonas.gmail.com', 'pop-shell@system76.com', 'gtktitlebar@velitasali.github.io']"
 
-[[ ${gnome_extension_appindicator} -eq 1 ]] &&
-	gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
-
-[[ ${gnome_extension_pop_shell} -eq 1 ]] &&
-	gnome-extensions enable pop-shell@system76.com
-
-if [[ ${gnome_extension_no_titlebars} -eq 1 ]]; then
-	gnome-extensions enable gtktitlebar@velitasali.github.io
+[[ ${gnome_extension_no_titlebars} -eq 1 ]] &&
 	dconf write /org/gnome/shell/extensions/gtktitlebar/hide-window-titlebars "'always'"
-fi
 
 # Required for ~/.config/environment.d/gnome.conf to take effect without rebooting.
 _logout() {
