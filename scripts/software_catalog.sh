@@ -82,11 +82,12 @@ fi
 	FLATPAKS+="com.borgbase.Vorta "
 
 if [[ ${dolphin} -eq 1 ]]; then
-	PKGS+="kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl "
+	PKGS+="kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl android-udev "
 	_config_dolphin() {
 		local CONF="/home/${WHICH_USER}/.config/dolphinrc"
 		kwriteconfig5 --file "${CONF}" --group "General" --key "ShowFullPath" "true"
 		kwriteconfig5 --file "${CONF}" --group "General" --key "ShowSpaceInfo" "false"
+		kwriteconfig5 --file "/home/${WHICH_USER}/.config/kdeglobals" --group "PreviewSettings" --key "MaximumRemoteSize" "10485760"
 	}
 fi
 

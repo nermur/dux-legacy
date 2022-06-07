@@ -134,7 +134,7 @@ fi
 PKGS+="noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-hack ttf-liberation ttf-carlito ttf-caladea \
 	dconf-editor gnome-logs konsole \
 	flatpak gsettings-desktop-schemas xdg-desktop-portal xdg-desktop-portal-gtk ibus \
-	kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl "
+	kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl android-udev "
 
 # Default packages, regardless of options selected.
 PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft libnewt pigz pbzip2 \
@@ -187,6 +187,8 @@ _config_dolphin() {
 	local CONF="/home/${WHICH_USER}/.config/dolphinrc"
 	kwriteconfig5 --file "${CONF}" --group "General" --key "ShowFullPath" "true"
 	kwriteconfig5 --file "${CONF}" --group "General" --key "ShowSpaceInfo" "false"
+	kwriteconfig5 --file "/home/${WHICH_USER}/.config/kdeglobals" --group "PreviewSettings" --key "MaximumRemoteSize" "10485760"
+	
 }
 _config_dolphin
 
