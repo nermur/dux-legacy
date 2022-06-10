@@ -105,6 +105,7 @@ sddm_autologin="1"
 sddm_autologin_session_type="plasma" # plasma, plasmawayland
 
 # Provides "Applications -> Internet -> Desktop Sharing (Krfb)"
+# Not recommended to use this; use NoMachine instead from the Software Catalog (done later on in this install).
 kde_remote_desktop="0"
 
 # A touchscreen keyboard.

@@ -23,43 +23,14 @@ chmod +x -R "${GIT_DIR}"
 [[ ${helvum} -eq 1 ]] &&
 	PKGS+="helvum "
 
-[[ ${virtual_machines} -eq 1 ]] &&
-	PKGS+="qemu-desktop libvirt virt-manager edk2-ovmf iptables-nft dnsmasq virglrenderer hwloc dmidecode usbutils swtpm "
-
-_virtual_machines_setup() {
-	if [[ ${virtual_machines} -eq 1 ]]; then
-		cp "${cp_flags}" "${GIT_DIR}"/files/etc/modprobe.d/custom_kvm.conf "/etc/modprobe.d/"
-		cp "${cp_flags}" "${GIT_DIR}"/files/etc/udev/rules.d/99-qemu.rules "/etc/udev/rules.d/"
-
-		# qemu: If using QEMU directly is desired instead of libvirt.
-		# video: Virtio OpenGL acceleration.
-		# kvm: Hypervisor hardware acceleration.
-		# libvirt: Access to virutal machines made through libvirt.
-		usermod -a -G qemu,video,kvm,libvirt "${WHICH_USER}"
-
-		local PARAMS="intel_iommu=on"
-		_modify_kernel_parameters
-
-		[[ ${REGENERATE_GRUB2_CONFIG} -eq 1 ]] &&
-			grub-mkconfig -o /boot/grub/grub.cfg
-
-		# Don't use Copy-on-Write (CoW) for virtual machine disks.
-		chattr +C "/var/lib/libvirt/images"
-
-		systemctl enable --now libvirtd.service
-
-		virsh net-autostart default
-
-		whiptail --yesno "A reboot is required to complete installing virtual machine support.\nReboot now?" 0 0 &&
-			reboot -f
-	fi
-}
-
 [[ ${spotify} -eq 1 ]] &&
 	PKGS_AUR+="spotify "
 
 [[ ${spotify_adblock} -eq 1 ]] &&
 	PKGS_AUR+="spotify-adblock-git spotify-remove-ad-banner "
+
+[[ ${nomachine} -eq 1 ]] &&
+	PKGS_AUR+="nomachine "
 
 [[ ${remmina} -eq 1 ]] &&
 	PKGS+="remmina libvncserver spice-gtk freerdp "
@@ -194,4 +165,3 @@ _systemctl enable --now ${SERVICES}
 _config_nomacs
 _config_dolphin
 _obs_autorun
-_virtual_machines_setup

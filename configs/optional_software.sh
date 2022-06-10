@@ -17,10 +17,10 @@ discord="1"
 # Text editor and/or IDE.
 visual_studio_code="1"
 
-# === Open-Source Software ===
-# Support for virtual machines through QEMU/Libvirt/Virt-manager.
-virtual_machines="0"
+# Seemingly the best remote desktop client and server.
+nomachine="0"
 
+# === Open-Source Software ===
 # Interactive application firewall.
 # Please have clear intentions for using this, as it will be annoying to handle otherwise.
 opensnitch="0"
@@ -34,7 +34,7 @@ easyeffects="0"
 cxx_toolbox="0"
 
 # Remote Desktop Client for: RDP, SFTP, SPICE, SSH, VNC, X2Go
-remmina="1"
+remmina="0"
 
 # The most private Chromium-based browser with a profitable business model that does not sacrifice your security and privacy.
 # https://privacytests.org/

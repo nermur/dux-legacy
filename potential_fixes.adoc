@@ -26,6 +26,9 @@ endif::[]
 . `$ systemd-analyze`
 . `$ systemd-analyze blame`
 
+* `# systool -vm kernel_module`
+** Shows detailed information of a loaded kernel module.
+
 == Potential solutions
 * WiFi not functional while booted into the Dux installation.
 ** `# rm /etc/NetworkManager/conf.d/wifi_backend.conf` then `# systemctl restart NetworkManager.service`
