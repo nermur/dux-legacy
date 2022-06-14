@@ -30,6 +30,9 @@ endif::[]
 ** Shows detailed information of a loaded kernel module.
 
 == Potential solutions
+* Simply rebooting.
+** This can be required when say, you updated your current kernel, then suddenly your virtual machine can't start up and complains about a missing kernel module (such as "tun").
+
 * WiFi not functional while booted into the Dux installation.
 ** `# rm /etc/NetworkManager/conf.d/wifi_backend.conf` then `# systemctl restart NetworkManager.service`
 

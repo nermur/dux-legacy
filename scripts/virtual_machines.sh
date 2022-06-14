@@ -34,18 +34,16 @@ _base_setup() {
 
     # Don't use Copy-on-Write (CoW) for virtual machine disks.
     chattr +C "/var/lib/libvirt/images"
-
-    systemctl enable --now libvirtd.service
-
-    virsh net-autostart default
 }
 
 _core_isolation() {
+    PKGS_AUR+="vfio-isolate "
     cp "${cp_flags}" "${GIT_DIR}"/files/etc/libvirt/qemu.d/domain/prepare/begin/core-isolation.sh "/etc/libvirt/qemu.d/${domain_name}/prepare/begin/" &&
         ln -f /etc/libvirt/qemu.d/"${domain_name}"/prepare/begin/core-isolation.sh "/etc/libvirt/qemu.d/${domain_name}/release/end/core-isolation.sh"
 }
 
 _dynamic_hugepages() {
+    PKGS+="ripgrep "
     KVM_GROUPID=$(getent group kvm | sed 's/[^0-9]*//g')
 
     if ! grep -q "/dev/hugepages2M|/dev/hugepages1G" /etc/fstab; then
@@ -67,10 +65,10 @@ EOF
 }
 
 _looking_glass_client() {
-    PKGS_AUR+="looking-glass-git "
+    PKGS_AUR+="looking-glass "
     _pkgs_aur_add
 
-    cat <<EOF >>/etc/tmpfiles.d/10-looking-glass.conf
+    cat <<EOF >/etc/tmpfiles.d/10-looking-glass.conf
 #Type Path               Mode UID  GID Age Argument
 
 f /dev/shm/looking-glass 0660 ${WHICH_USER} kvm -
@@ -82,6 +80,8 @@ _base_setup
 [[ ${core_isolation} -eq 1 ]] && _core_isolation
 [[ ${dynamic_hugepages} -eq 1 ]] && _dynamic_hugepages
 [[ ${looking_glass_client} -eq 1 ]] && _looking_glass_client
+systemctl enable --now libvirtd.service &&
+    virsh net-autostart default
 
 whiptail --yesno "A reboot is required to complete installing virtual machine support.\nReboot now?" 0 0 &&
     reboot -f

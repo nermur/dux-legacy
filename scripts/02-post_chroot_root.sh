@@ -41,13 +41,14 @@ _preparation() {
 _preparation
 
 _userinfo() {
-	if [[ ! -s "/etc/hostname" ]]; then
-		cat <<EOF >/etc/hosts
+	cat <<EOF >/etc/hosts
+# Static table lookup for hostnames.
+# See hosts(5) for details.
+
 127.0.0.1        localhost
 ::1              ip6-localhost
 127.0.1.1        ${system_hostname}        ${system_hostname}
 EOF
-	fi
 
 	# Safe to do; if say /home/admin existed, it wouldn't also remove /home/admin.
 	if id -u "${WHICH_USER}" >/dev/null 2>&1; then
@@ -138,7 +139,7 @@ PKGS+="noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-hack ttf-liberation ttf-ca
 
 # Default packages, regardless of options selected.
 PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft \
-libnewt pigz pbzip2 openresolv strace usbutils linux-firmware gnome-keyring avahi nss-mdns ntfs-3g \
+dnsmasq openresolv libnewt pigz pbzip2 strace usbutils linux-firmware gnome-keyring avahi nss-mdns ntfs-3g \
 man-db man-pages pacman-contrib snapper snap-pac mkinitcpio bat \
 wget trash-cli reflector rebuild-detector vim "
 

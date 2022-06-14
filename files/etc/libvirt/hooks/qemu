@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Copy this file to /etc/libvirt/hooks, make sure it's called "qemu".
-# After this file is installed, restart libvirt.service.
+# After this file is installed, restart libvirtd.service.
 # From now on, you can easily add per-guest qemu hooks.
 # Add your hooks in /etc/libvirt/hooks/qemu.d/domain_name/hook_name/state_name.
 # For a list of available hooks, please refer to https://www.libvirt.org/hooks.html
