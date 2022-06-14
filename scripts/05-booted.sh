@@ -8,8 +8,6 @@ cd "${SCRIPT_DIR}" && GIT_DIR=$(git rev-parse --show-toplevel)
 source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 
-ln -rsf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-
 _snapper() {
 	(bash "/home/${WHICH_USER}/dux/scripts/snapper.sh") |& tee "${GIT_DIR}/logs/snapper.log"
 }

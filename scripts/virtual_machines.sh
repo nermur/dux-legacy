@@ -70,10 +70,12 @@ _looking_glass_client() {
     PKGS_AUR+="looking-glass-git "
     _pkgs_aur_add
 
-    local FILE="/dev/shm/looking-glass"
-    touch "${FILE}"
-    chown "${WHICH_USER}":kvm "${FILE}"
-    chmod 0660 "${FILE}"
+    cat <<EOF >>/etc/tmpfiles.d/10-looking-glass.conf
+#Type Path               Mode UID  GID Age Argument
+
+f /dev/shm/looking-glass 0660 ${WHICH_USER} kvm -
+EOF
+    systemd-tmpfiles --create
 }
 
 _base_setup

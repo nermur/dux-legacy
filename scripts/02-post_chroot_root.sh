@@ -69,7 +69,7 @@ EOF
 	mv -f "/home/${WHICH_USER}/dux" "/home/${WHICH_USER}/dux_backup_${DATE}" >&/dev/null || :
 	cp -f -R "${GIT_DIR}" "/home/${WHICH_USER}/dux"
 
-	mkdir "${mkdir_flags}" {/etc/{modules-load.d,modprobe.d,pacman.d/hooks,X11,fonts,systemd/user,snapper/configs,conf.d},/boot,/home/"${WHICH_USER}"/.config/{fontconfig/conf.d,systemd/user},/usr/share/libalpm/scripts}
+	mkdir "${mkdir_flags}" {/etc/{modules-load.d,NetworkManager/conf.d,modprobe.d,tmpfiles.d,pacman.d/hooks,X11,fonts,systemd/user,snapper/configs,conf.d},/boot,/home/"${WHICH_USER}"/.config/{fontconfig/conf.d,systemd/user},/usr/share/libalpm/scripts}
 }
 _userinfo
 
@@ -137,8 +137,8 @@ PKGS+="noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-hack ttf-liberation ttf-ca
 	kconfig ark dolphin kde-cli-tools kdegraphics-thumbnailers kimageformats qt5-imageformats ffmpegthumbs taglib openexr libjxl android-udev "
 
 # Default packages, regardless of options selected.
-PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft libnewt pigz pbzip2 \
-strace usbutils linux-firmware gnome-keyring avahi nss-mdns ntfs-3g \
+PKGS+="irqbalance zram-generator power-profiles-daemon thermald dbus-broker gamemode lib32-gamemode iptables-nft \
+libnewt pigz pbzip2 openresolv strace usbutils linux-firmware gnome-keyring avahi nss-mdns ntfs-3g \
 man-db man-pages pacman-contrib snapper snap-pac mkinitcpio bat \
 wget trash-cli reflector rebuild-detector vim "
 
@@ -188,7 +188,8 @@ _config_dolphin() {
 	kwriteconfig5 --file "${CONF}" --group "General" --key "ShowFullPath" "true"
 	kwriteconfig5 --file "${CONF}" --group "General" --key "ShowSpaceInfo" "false"
 	kwriteconfig5 --file "/home/${WHICH_USER}/.config/kdeglobals" --group "PreviewSettings" --key "MaximumRemoteSize" "10485760"
-	
+	balooctl suspend
+	balooctl disable
 }
 _config_dolphin
 
@@ -199,7 +200,7 @@ ln -sf /dev/null /usr/share/libalpm/hooks/90-mkinitcpio-install.hook
 # Default services, regardless of options selected.
 SERVICES+="fstrim.timer reflector.timer btrfs-scrub@-.timer \
 irqbalance.service dbus-broker.service power-profiles-daemon.service thermald.service rfkill-unblock@all avahi-daemon.service \
-systemd-oomd.service systemd-timesyncd.service systemd-resolved.service "
+systemd-timesyncd.service "
 
 # shellcheck disable=SC2086
 _systemctl enable ${SERVICES}
@@ -247,7 +248,8 @@ elif [[ ${bootloader_type} -eq 2 ]]; then
 	_setup_refind_bootloader() {
 		# x86_64-efi: rEFInd overrides GRUB2 without issues.
 		refind-install
-
+		# Tell rEFInd to detect the initramfs for linux-lts & linux automatically.
+		sed -i '/^#extra_kernel_version_strings/s/^#//' /boot/EFI/refind/refind.conf
 		_move2bkup "/etc/pacman.d/hooks/refind.hook" &&
 			cp "${cp_flags}" "${GIT_DIR}"/files/etc/pacman.d/hooks/refind.hook "/etc/pacman.d/hooks/"
 	}
@@ -268,6 +270,23 @@ EOF
 	_move2bkup "/etc/pacman.d/hooks/zz_snap-pac-grub-post.hook"
 fi
 
+_config_networkmanager() {
+	local DIR="etc/NetworkManager/conf.d"
+
+	# Use openresolv instead of systemd-resolvconf.
+	_move2bkup "/${DIR}/rc-manager.conf" &&
+		cp "${cp_flags}" "${GIT_DIR}"/files/"${DIR}"/rc-manager.conf "${DIR}"
+
+	# Use dnsmasq instead of systemd-resolved.
+	_move2bkup "/${DIR}/dns.conf" &&
+		cp "${cp_flags}" "${GIT_DIR}"/files/"${DIR}"/dns.conf "/${DIR}/"
+}
+_config_networkmanager
+
+# Disables late microcode updates, which Linux 5.19 defaults to doing:
+# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9784edd73a08ea08d0ce5606e1f0f729df688c59
+ln -s /dev/null /etc/tmpfiles.d/linux-firmware.conf
+
 # Ensure "net.ipv4.tcp_congestion_control = bbr" is a valid option.
 _move2bkup "/etc/modules-load.d/tcp_bbr.conf" &&
 	cp "${cp_flags}" "${GIT_DIR}"/files/etc/modules-load.d/tcp_bbr.conf "/etc/modules-load.d/"
@@ -280,10 +299,6 @@ _move2bkup "/etc/systemd/zram-generator.conf" &&
 # Configures some kernel parameters; also contains memory management settings specific to zRAM.
 _move2bkup "/etc/sysctl.d/99-custom.conf" &&
 	cp "${cp_flags}" "${GIT_DIR}"/files/etc/sysctl.d/99-custom.conf "/etc/sysctl.d/"
-
-# Stop systemd-oomd from being overzealous on killing memory heavy processes before the physical memory is fully used.
-sed -i -e "s/.DefaultMemoryPressureLimit.*/DefaultMemoryPressureLimit=100%/" \
-	-e "s/.SwapUsedLimit.*/SwapUsedLimit=100%/" /etc/systemd/oomd.conf
 
 # Use overall best I/O scheduler for each drive type (NVMe, SSD, HDD).
 _move2bkup "/etc/udev/rules.d/60-io-schedulers.rules" &&

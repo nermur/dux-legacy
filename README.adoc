@@ -75,7 +75,7 @@ NOTE: Skip to link:0.1_start.adoc[0.1_start.adoc] for installation.
 https://github.com/systemd/systemd/issues/9725#issuecomment-564872011
 
 * `Btrfs` is used to: 
-** Compress data in real-time without any noticeable performance impact, reducing write amplification (increases longevity of disks by lowering disk usage), and increasing read speeds on slow disks.
+** Compress data in real-time without noticeable performance impacts, reducing write amplification (increases longevity of disks by lowering disk usage), and increasing read speeds on slow disks.
 ** Have high-performance and deduplicated "snapshots" (backups) of key areas, which turns Arch Linux updates breaking software into a small nuisance, as it's very quick and easy to restore to a previous snapshot.
 ** Allow for an easier data recovery if a disk gets damaged and/or starts to have bad sectors.
 ** To once a month automatically check (Scrub) over all filesystem data and metadata and verifying the checksums, repairing damage if present and possible.
@@ -92,7 +92,8 @@ https://github.com/systemd/systemd/issues/9725#issuecomment-564872011
 ** `mq-deadline` for SSDs and eMMCs (flash/USB disks/SD cards), `bfq` for spinning disks (HDDs). +
 This makes these types of storage highly responsive to your inputs.
 
-* `irqbalance`: manages IRQ interrupts more efficiently by being more aware of the current environment. One example is offloading IRQ interrupts to CPU affinities which have the lowest load on them. Another example is respecting VMs having their CPU affinities isolated, meaning irqbalance will offload the IRQ interrupts to CPU affinities that aren't isolated.
+* `irqbalance`
+** Manages IRQ interrupts more efficiently by being more aware of the current environment. One example is offloading IRQ interrupts to CPU affinities which have the lowest load on them. Another example is respecting VMs having their CPU affinities isolated, meaning irqbalance will offload the IRQ interrupts to CPU affinities that aren't isolated.
 
 * `Flatpak`
 ** Visual inconsistencies with Flatpaks are mostly fixed.
@@ -101,10 +102,16 @@ This makes these types of storage highly responsive to your inputs.
 ** Provides a large performance boost for some Intel laptops, with no observable downsides for other hardware combinations.
 ** https://www.phoronix.com/scan.php?page=article&item=intel-thermald-tgl&num=2
 
-* `systemd-oomd`
-** Configured in a way that correctly handles memory pressure & out of memory situations; expect less random process killing, especially on low RAM (<=8GB) systems.
+* Disabled `Baloo` "full-text" indexer
+** It's preferred to load files on demand then cache their thumbnails; a simpler approach that works reliably and without performance issues.
+** `Baloo` has a link:https://bugs.kde.org/show_bug.cgi?id=402154[long-standing bug] related to usage of Btrfs subvolumes (which we use), that greatly impacts disk usage and overall system performance.
+*** Even without this bug, file indexers daemons like `Baloo` won't be used as their design is conceptually over-complicated, and will always be problematic.
 
-* `systemd-resolvconf`
+* No `systemd-oomd` and no `earlyoom`
+** Let the Linux kernel handle OOM (out of memory) situations, since our usage of `zRAM` makes Linux handle its OOM killer much more efficiently than before (still not good however).
+*** Likely from link:https://www.phoronix.com/scan.php?page=news_item&px=MGLRU-Not-For-5.18[Linux kernel 5.19 and beyond] there'd be substantial improvements to OOM situations, that make `systemd-oomd` and `earlyoom` not helpful.
+
+* `dnsmasq` and `openresolv`, instead of `systemd-resolved` and `systemd-resolvconf`
 ** To support VPN "network locking", and to ensure DNS resolution is reliable.
 
 * `nftables`

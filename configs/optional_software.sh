@@ -18,25 +18,23 @@ discord="1"
 visual_studio_code="1"
 
 # Seemingly the best remote desktop client and server.
+# NOTE: The NoMachine server is disabled by default; if desired: # systemctl enable --now nxserver.service
 nomachine="0"
 
 # === Open-Source Software ===
 # Interactive application firewall.
-# Please have clear intentions for using this, as it will be annoying to handle otherwise.
+# Please have clear intentions for using this, as it'll be annoying to handle otherwise.
 opensnitch="0"
 
-# - Recommendations -
-# For headphones: https://github.com/jaakkopasanen/AutoEq#pulseeffects--easyeffects
-# For microphones: Use "Noise Reduction" to start out with.
+# Recommendations ->
+#   For headphones: https://github.com/jaakkopasanen/AutoEq#pulseeffects--easyeffects
+#   For microphones: Use "Noise Reduction" to start out with.
 easyeffects="0"
 
 # C/C++ debugging and reverse engineering: Valgrind, GDB, radere2 + ghidra (graphical interface: Cutter), pwndbg.
 cxx_toolbox="0"
 
-# Remote Desktop Client for: RDP, SFTP, SPICE, SSH, VNC, X2Go
-remmina="0"
-
-# The most private Chromium-based browser with a profitable business model that does not sacrifice your security and privacy.
+# The most private Chromium-based browser with a profitable business model that doesn't sacrifice your security and privacy.
 # https://privacytests.org/
 brave="1"
 

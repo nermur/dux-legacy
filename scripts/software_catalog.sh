@@ -32,9 +32,6 @@ chmod +x -R "${GIT_DIR}"
 [[ ${nomachine} -eq 1 ]] &&
 	PKGS_AUR+="nomachine "
 
-[[ ${remmina} -eq 1 ]] &&
-	PKGS+="remmina libvncserver spice-gtk freerdp "
-
 [[ ${easyeffects} -eq 1 ]] &&
 	PKGS+="easyeffects "
 
@@ -162,6 +159,7 @@ _flatpaks_add
 # shellcheck disable=SC2086
 _systemctl enable --now ${SERVICES}
 
-_config_nomacs
-_config_dolphin
-_obs_autorun
+[[ ${nomacs} -eq 1 ]] && _config_nomacs
+[[ ${dolphin} -eq 1 ]] && _config_dolphin
+[[ ${obs_studio} -eq 1 ]] && _obs_autorun
+[[ ${nomachine} -eq 1 ]] && systemctl disable nxserver.service
