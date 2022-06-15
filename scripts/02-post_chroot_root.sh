@@ -286,7 +286,7 @@ _config_networkmanager
 
 # Disables late microcode updates, which Linux 5.19 defaults to doing:
 # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9784edd73a08ea08d0ce5606e1f0f729df688c59
-ln -s /dev/null /etc/tmpfiles.d/linux-firmware.conf
+ln -s /dev/null /etc/tmpfiles.d/linux-firmware.conf &>/dev/null || :
 
 # Ensure "net.ipv4.tcp_congestion_control = bbr" is a valid option.
 _move2bkup "/etc/modules-load.d/tcp_bbr.conf" &&
