@@ -276,7 +276,7 @@ _config_networkmanager() {
 
 	# Use openresolv instead of systemd-resolvconf.
 	_move2bkup "/${DIR}/rc-manager.conf" &&
-		cp "${cp_flags}" "${GIT_DIR}"/files/"${DIR}"/rc-manager.conf "${DIR}"
+		cp "${cp_flags}" "${GIT_DIR}"/files/"${DIR}"/rc-manager.conf "/${DIR}/"
 
 	# Use dnsmasq instead of systemd-resolved.
 	_move2bkup "/${DIR}/dns.conf" &&

@@ -109,7 +109,7 @@ This makes these types of storage highly responsive to your inputs.
 
 * No `systemd-oomd` and no `earlyoom`
 ** Let the Linux kernel handle OOM (out of memory) situations, since our usage of `zRAM` makes Linux handle its OOM killer much more efficiently than before (still not good however).
-*** Likely from link:https://www.phoronix.com/scan.php?page=news_item&px=MGLRU-Not-For-5.18[Linux kernel 5.19 and beyond] there'd be substantial improvements to OOM situations, that make `systemd-oomd` and `earlyoom` not helpful.
+*** Likely from link:https://www.phoronix.com/scan.php?page=news_item&px=Linux-MGLRU-v9-Promising[Linux kernel 5.20 and beyond] there'd be substantial improvements to OOM situations, that make `systemd-oomd` and `earlyoom` not helpful.
 
 * `dnsmasq` and `openresolv`, instead of `systemd-resolved` and `systemd-resolvconf`
 ** To support VPN "network locking", and to ensure DNS resolution is reliable.

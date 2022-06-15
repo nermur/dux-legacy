@@ -9,12 +9,14 @@ source "${GIT_DIR}/scripts/GLOBAL_IMPORTS.sh"
 source "${GIT_DIR}/configs/settings.sh"
 source "${GIT_DIR}/configs/virtual_machines.sh"
 
+HOOK_DIR="etc/libvirt/hooks/qemu.d"
+
 _base_setup() {
     PKGS+="qemu-desktop libvirt virt-manager edk2-ovmf iptables-nft dnsmasq virglrenderer hwloc dmidecode usbutils swtpm "
     _pkgs_add
 
-    mkdir -p /etc/{modprobe.d,udev/rules.d,libvirt/hooks}
-    mkdir -p /etc/libvirt/qemu.d/"${domain_name}"/{prepare/begin,started/begin,release/end}
+    mkdir -p /etc/{modprobe.d,udev/rules.d}
+    mkdir -p /"${HOOK_DIR}"/{prepare/begin,started/begin,release/end}
 
     cp "${cp_flags}" "${GIT_DIR}"/files/etc/modprobe.d/custom_kvm.conf "/etc/modprobe.d/"
     cp "${cp_flags}" "${GIT_DIR}"/files/etc/udev/rules.d/99-qemu.rules "/etc/udev/rules.d/"
@@ -38,8 +40,8 @@ _base_setup() {
 
 _core_isolation() {
     PKGS_AUR+="vfio-isolate "
-    cp "${cp_flags}" "${GIT_DIR}"/files/etc/libvirt/qemu.d/domain/prepare/begin/core-isolation.sh "/etc/libvirt/qemu.d/${domain_name}/prepare/begin/" &&
-        ln -f /etc/libvirt/qemu.d/"${domain_name}"/prepare/begin/core-isolation.sh "/etc/libvirt/qemu.d/${domain_name}/release/end/core-isolation.sh"
+    cp "${cp_flags}" "${GIT_DIR}"/files/"${HOOK_DIR}"/domain/prepare/begin/core-isolation.sh "/${HOOK_DIR}/${domain_name}/prepare/begin/" &&
+        ln -f /"${HOOK_DIR}"/"${domain_name}"/prepare/begin/core-isolation.sh "/${HOOK_DIR}/${domain_name}/release/end/core-isolation.sh"
 }
 
 _dynamic_hugepages() {
@@ -59,8 +61,8 @@ hugetlbfs_mount = [ "/dev/hugepages2M", "/dev/hugepages1G" ]
 EOF
     fi
 
-    cp "${cp_flags}" "${GIT_DIR}"/files/etc/libvirt/qemu.d/domain/prepare/begin/hugepages.sh "/etc/libvirt/qemu.d/${domain_name}/prepare/begin/" &&
-        ln -f /etc/libvirt/qemu.d/"${domain_name}"/prepare/begin/hugepages.sh "/etc/libvirt/qemu.d/${domain_name}/release/end/hugepages.sh"
+    cp "${cp_flags}" "${GIT_DIR}"/files/"${HOOK_DIR}"/domain/prepare/begin/hugepages.sh "/${HOOK_DIR}/${domain_name}/prepare/begin/" &&
+        ln -f /"${HOOK_DIR}"/"${domain_name}"/prepare/begin/hugepages.sh "/${HOOK_DIR}/${domain_name}/release/end/hugepages.sh"
 
 }
 
@@ -73,6 +75,7 @@ _looking_glass_client() {
 
 f /dev/shm/looking-glass 0660 ${WHICH_USER} kvm -
 EOF
+    [[ -e "/dev/shm/looking-glass" ]] && rm -f "/dev/shm/looking-glass"
     systemd-tmpfiles --create
 }
 
@@ -82,6 +85,8 @@ _base_setup
 [[ ${looking_glass_client} -eq 1 ]] && _looking_glass_client
 systemctl enable --now libvirtd.service &&
     virsh net-autostart default
+
+chmod +x -R "/etc/libvirt/hooks"
 
 whiptail --yesno "A reboot is required to complete installing virtual machine support.\nReboot now?" 0 0 &&
     reboot -f
