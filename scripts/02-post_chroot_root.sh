@@ -209,7 +209,7 @@ _systemctl enable ${SERVICES}
 systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service
 
 [[ ${disable_cpu_security_mitigations} -eq 1 ]] &&
-	MITIGATIONS_OFF="ibt=off mitigations=off"
+	MITIGATIONS_OFF="mmio_stale_data=off ibt=off mitigations=off"
 
 if [[ ${use_disk_encryption} -eq 1 ]]; then
 	REQUIRED_PARAMS="rd.luks.name=${ROOT_DISK}=lukspart rd.luks.options=discard root=/dev/mapper/lukspart rootflags=subvol=@root rw"
