@@ -13,8 +13,3 @@ if core_isolation="1"; then
 fi
 
 dynamic_hugepages="1"
-
-# NOTES: 
-# At least one display has to be attached to the GPU Looking Glass uses.
-# If you change ivshmem-plain's memory size, run `# systemd-tmpfiles --create` otherwise the VM will fail to boot.
-looking_glass_client="1"

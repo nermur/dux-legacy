@@ -66,23 +66,9 @@ EOF
 
 }
 
-_looking_glass_client() {
-    PKGS_AUR+="looking-glass "
-    _pkgs_aur_add
-
-    cat <<EOF >/etc/tmpfiles.d/10-looking-glass.conf
-#Type Path               Mode UID  GID Age Argument
-
-f /dev/shm/looking-glass 0660 ${WHICH_USER} kvm -
-EOF
-    [[ -e "/dev/shm/looking-glass" ]] && rm -f "/dev/shm/looking-glass"
-    systemd-tmpfiles --create
-}
-
 _base_setup
 [[ ${core_isolation} -eq 1 ]] && _core_isolation
 [[ ${dynamic_hugepages} -eq 1 ]] && _dynamic_hugepages
-[[ ${looking_glass_client} -eq 1 ]] && _looking_glass_client
 systemctl enable --now libvirtd.service &&
     virsh net-autostart default
 

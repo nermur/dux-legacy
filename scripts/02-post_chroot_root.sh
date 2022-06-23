@@ -47,7 +47,7 @@ _userinfo() {
 
 127.0.0.1        localhost
 ::1              ip6-localhost
-127.0.1.1        ${system_hostname}        ${system_hostname}
+127.0.1.1        ${system_hostname}
 EOF
 
 	# Safe to do; if say /home/admin existed, it wouldn't also remove /home/admin.
@@ -208,7 +208,7 @@ _systemctl enable ${SERVICES}
 
 systemctl mask lvm2-lvmpolld.socket lvm2-monitor.service systemd-resolved.service systemd-oomd.service
 
-[[ ${disable_cpu_security_mitigations} -eq 1 ]] &&
+[[ ${no_mitigations} -eq 1 ]] &&
 	MITIGATIONS_OFF="ibt=off mitigations=off"
 
 if [[ ${use_disk_encryption} -eq 1 ]]; then

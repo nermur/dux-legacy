@@ -30,21 +30,16 @@ _setup_sddm() {
 	SERVICES+="sddm.service "
 }
 
-[[ ${kde_remote_desktop} -eq 1 ]] &&
-	PKGS+="krfb "
-
 if [[ ${kde_install_virtual_keyboard} -eq 1 ]]; then
 	PKGS+="qt5-virtualkeyboard "
 	kwriteconfig5 --file "${SDDM_CONF}" --group "General" --key "InputMethod" "qtvirtualkeyboard"
 fi
 
-[[ ${kde_install_wacom_configurator} -eq 1 ]] &&
-	PKGS+="kcm-wacomtablet "
-
 PKGS+="plasma-wayland-session colord-kde kwallet-pam kwalletmanager konsole spectacle aspell aspell-en networkmanager \
 xdg-desktop-portal xdg-desktop-portal-kde \
 sddm sddm-kcm \
-lib32-libappindicator-gtk2 lib32-libappindicator-gtk3 libappindicator-gtk2 libappindicator-gtk3 "
+lib32-libappindicator-gtk2 lib32-libappindicator-gtk3 libappindicator-gtk2 libappindicator-gtk3 \
+kcm-wacomtablet "
 _pkgs_add
 
 # Incase GNOME was used previously.

@@ -27,8 +27,8 @@ hardware_printers_and_scanners="1"
 # WIP, but for now: https://wiki.archlinux.org/title/Fprint#Configuration
 hardware_fingerprint_reader="0"
 
-# 0: intended for 24/7 operation that can survive unexpected reboots.
-use_disk_encryption="1"
+# 1: LUKS2 encryption is intended here for those using portable devices.
+use_disk_encryption="0"
 
 # 1: GRUB2
 # 2: rEFInd
@@ -40,7 +40,7 @@ bootloader_type="2"
 # 0: Massive performance penalty on CPUs older than AMD Zen 2 or Intel 10th gen,
 # and caused a boot failure bug for Linux 5.18:
 # https://bugs.archlinux.org/task/74891?project=1&pagenum=1
-disable_cpu_security_mitigations="1"
+no_mitigations="1"
 
 #- Download server region selection
 #
@@ -68,9 +68,6 @@ desktop_environment="1"
 gdm_auto_login="1"
 gdm_disable_wayland="0"
 
-# Provides "Remote Desktop" and "Remote Login" in Settings -> Sharing.
-gnome_remote_desktop="0"
-
 # It's not recommended to run the non-riced/vanilla GNOME.
 allow_gnome_rice="1"
 
@@ -91,11 +88,11 @@ if [[ ${allow_gnome_rice} -eq 1 ]]; then
     # Support for tray icons.
     gnome_extension_appindicator="1"
     # Recommended to use alongside the no titlebars tweak.
-    gnome_extension_pop_shell="1"
+    gnome_extension_pop_shell="0"
     # Prioritizes mouse & keyboard instead of mouse oriented window management, and frees up screen space.
     gnome_extension_no_titlebars="1"
 
-    # Don't automatically turn off the screen or suspend the computer.
+    # Don't automatically turn off the screen.
     gnome_disable_idle="1"
 fi
 
@@ -104,14 +101,9 @@ fi
 sddm_autologin="1"
 sddm_autologin_session_type="plasma" # plasma, plasmawayland
 
-# Provides "Applications -> Internet -> Desktop Sharing (Krfb)"
-# Not recommended to use this; use NoMachine instead from the Software Catalog (done later on in this install).
-kde_remote_desktop="0"
-
 # A touchscreen keyboard.
 kde_install_virtual_keyboard="0"
-# For Wacom-based touchscreens and tablets.
-kde_install_wacom_configurator="0"
+
 # Try this only if KDE seems buggy.
 kde_use_kwinft="0"
 
